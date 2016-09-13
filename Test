@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -e
+
+BASE=$(cd $(dirname "$0") && pwd -P)
+
+cd "$BASE"
+[ -e bats/bin/bats ] || {
+    echo >&2 'Did not find bats executable. `git submodule update --init`?'
+    exit 1
+}
+bats/bin/bats "${@:-t/}"
