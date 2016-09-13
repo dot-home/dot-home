@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# To-do:
+# * Remove dangling links pointing into .home
+# * Do not remove other dangling links
+# * Warn when a later .home/*/bin has a conflict with an earlier link
+# * learn to link .home/dot/**{!.inb?} files
+
+mkdir -p "$HOME"/bin
+cd "$HOME"/bin
+for src in ../.home/*/bin/*; do
+    ln -s $src
+done
