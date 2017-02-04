@@ -95,6 +95,25 @@ symlink_home() {
     done
 }
 
+declare -a inb4_sorted
+inb4_sort() {
+    inb4_sorted=()
+    while read line; do
+        inb4_sorted+=("$line");
+    done < <(
+        for path in "$@"; do echo "${path: -1} $path"; done \
+            | sort -n --stable \
+            | sed -e 's/^..//' \
+        )
+}
+
+inb4_cat() {
+    inb4_sort "$@"
+    for file in "${inb4_sorted[@]}"; do
+        cat "$file"
+    done
+}
+
 inb4_home() {
     local oldifs="$IFS"; IFS=$'\n'
     local outputs=($(
@@ -107,8 +126,7 @@ inb4_home() {
     local output
     for output in "${outputs[@]}"; do
         mkdir -p "$(dirname ",inb4/$output")"
-        touch ",inb4/$output"
-        cat */"$output".inb[0-9] > ",inb4/$output"
+        inb4_cat */"$output".inb[0-9] > ",inb4/$output"
     done
 }
 

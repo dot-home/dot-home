@@ -36,10 +36,10 @@ assert_output_file() {
     assert_output ''
 
     assert_output_file ',inb4/dot/2 subdir/config' <<.
-        Content of .home/A/dot/2 subdir/config.inb4
         Content of .home/B/dot/2 subdir/config.inb3
-        Content of .home/B/dot/2 subdir/config.inb5
+        Content of .home/A/dot/2 subdir/config.inb4
         Content of .home/C/dot/2 subdir/config.inb4
+        Content of .home/B/dot/2 subdir/config.inb5
 .
 
     assert_output_file ',inb4/dot/3 subdir/config' <<.
