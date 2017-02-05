@@ -3,6 +3,19 @@ set -e
 
 basedir=$(cd $(dirname "$0") && pwd -P)
 
+warn() { echo >&2 "$(basename $0):" "$@"; }
+
+check_submodules() {
+    count=$(git submodule status --recursive | sed -n -e '/^[^ ]/p' | wc -l)
+    [ $count -eq 0 ] || {
+        warn "$count Git submodules are not up to date"
+        warn 'Run `git submodule update --init`?'
+    }
+}
+
+############################################################
+# Main
+
 # We use `sort` and various other localized commands in the tests;
 # make sure that we always have a consistent sorting order regardless
 # of the user's locale.
@@ -17,8 +30,5 @@ export LC_COLLATE=C
 find $basedir/t/mock-home -type d -empty -delete
 
 cd "$basedir"
-[ -e bats/bin/bats ] || {
-    echo >&2 'Did not find bats executable. `git submodule update --init`?'
-    exit 1
-}
+check_submodules
 bats/bin/bats "${@:-t/}"
