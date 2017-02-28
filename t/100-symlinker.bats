@@ -16,7 +16,7 @@ setup_home() {
     setup_home
     HOME="$test_home" run "$BATS_TEST_DIRNAME/../bin/dot-home-setup"
     (cd $test_home && find . \
-               -type l  -exec bash -c 'echo -n {} "-> "; readlink {}' \; \
+               -type l  -exec bash -c 'echo -n {} "-> "; readlink "{}"' \; \
             -o -type d  -true  \
             -o          -print \
         | sed -e 's,^\./,,' | sort >../home.list)

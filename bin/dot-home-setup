@@ -1,13 +1,20 @@
 #!/usr/bin/env bash
 
 # To-do:
-# * Remove dangling links pointing into .home
-# * Do not remove other dangling links
 # * Warn when a later .home/*/bin has a conflict with an earlier link
 # * learn to link .home/dot/**{!.inb?} files
 
 mkdir -p "$HOME"/bin
 cd "$HOME"/bin
+
+# First pass, remove dangling links pointing into .home
+for f in *; do
+    [ -L "$f" ] || continue
+    target="$(readlink "$f")"
+    [ -z "${target##../.home/*}" ] || continue
+    rm -f "$f"
+done
+
 for src in ../.home/*/bin/*; do
     ln -s $src
 done
