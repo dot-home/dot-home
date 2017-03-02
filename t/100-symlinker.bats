@@ -21,11 +21,17 @@ setup_home() {
 @test "symlinker" {
     setup_home
     HOME="$test_home" run "$BATS_TEST_DIRNAME/../bin/dot-home-setup"
+
+    local expected="$test_dir/home.expected"
+    sed -e '/^#/d' "$BATS_TEST_DIRNAME/100-symlinker.expected" >"$expected"
+
+    local actual="$test_dir/home.actual"
     (cd $test_home && find . \
                -type l  -exec bash -c 'echo -n {} "-> "; readlink "{}"' \; \
             -o -type d  -true  \
             -o          -print \
-        | sed -e 's,^\./,,' | sort >../home.actual)
+        | sed -e 's,^\./,,' | sort >"$actual")
+
     assert_output ''
-    diff -u $BATS_TEST_DIRNAME/100-symlinker.expected $test_home/../home.actual
+    diff -u "$expected" "$actual"
 }

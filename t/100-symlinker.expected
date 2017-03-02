@@ -1,3 +1,12 @@
+#
+#  Source files in .home
 .home/a/bin/hello
+#
+#  This has been removed because it points inside .home
+#bin/dangling inside -> ../.home/a/bin/dangling inside
+#
+#  Links pointing outside .home do not get removed.
 bin/dangling outside -> ../a b c/dangling outside
+#
+#  File in .home/*/bin/ is linked
 bin/hello -> ../.home/a/bin/hello
