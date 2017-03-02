@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 # To-do:
-# * Warn when a later .home/*/bin has a conflict with an earlier link
 # * learn to link .home/dot/**{!.inb?} files
 
 warn() {
@@ -20,5 +19,6 @@ for f in *; do
 done
 
 for src in ../.home/*/bin/*; do
-    ln -s "$src" 2>/dev/null || warn "Conflict in bin/: $src"
+    [ -f "$src" ] \
+        && { ln -s "$src" 2>/dev/null || warn "Conflict in bin/: $src"; }
 done
