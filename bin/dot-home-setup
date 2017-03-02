@@ -4,6 +4,10 @@
 # * Warn when a later .home/*/bin has a conflict with an earlier link
 # * learn to link .home/dot/**{!.inb?} files
 
+warn() {
+    echo -e 2>&1 ".home WARNING:" "$@"
+}
+
 mkdir -p "$HOME"/bin
 cd "$HOME"/bin
 
@@ -16,5 +20,5 @@ for f in *; do
 done
 
 for src in ../.home/*/bin/*; do
-    ln -s "$src"
+    ln -s "$src" 2>/dev/null || warn "Conflict in bin/: $src"
 done

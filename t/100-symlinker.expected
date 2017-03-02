@@ -1,6 +1,10 @@
 #
 #  Source files in .home
 .home/a/bin/hello world
+#  Conflicts with files in and out of ~/.home
+.home/a/bin/in-home conflict
+.home/b/bin/in-home conflict
+.home/b/bin/out-home conflict
 #
 #  This has been removed because it points inside .home
 #bin/dangling inside -> ../.home/a/bin/dangling inside
@@ -8,5 +12,9 @@
 #  Links pointing outside .home do not get removed.
 bin/dangling outside -> ../a b c/dangling outside
 #
-#  File in .home/*/bin/ is linked
+#  Files in .home/*/bin/ are linked
 bin/hello world -> ../.home/a/bin/hello world
+bin/in-home conflict -> ../.home/a/bin/in-home conflict
+#
+#  File from "outside" of ~/.home/ system
+bin/out-home conflict
