@@ -1,6 +1,6 @@
 #
 #  Source files in .home
-.home/a/bin/hello
+.home/a/bin/hello world
 #
 #  This has been removed because it points inside .home
 #bin/dangling inside -> ../.home/a/bin/dangling inside
@@ -9,4 +9,4 @@
 bin/dangling outside -> ../a b c/dangling outside
 #
 #  File in .home/*/bin/ is linked
-bin/hello -> ../.home/a/bin/hello
+bin/hello world -> ../.home/a/bin/hello world

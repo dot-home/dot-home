@@ -16,5 +16,5 @@ for f in *; do
 done
 
 for src in ../.home/*/bin/*; do
-    ln -s $src
+    ln -s "$src"
 done
