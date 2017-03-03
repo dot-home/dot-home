@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -o pipefail
 
 # To-do:
 # * learn to link .home/dot/**{!.inb?} files
@@ -25,18 +26,33 @@ set_dest_target() {
 
 [ _"$1" = _--define-functions-only ] && { return 0; exit 0; }
 
-mkdir -p "$HOME"/bin
-cd "$HOME"/bin/ || die "Cannot change to $HOME/bin/."
+mkdir -p "$HOME"/.home/,build
 
-# First pass, remove dangling links pointing into .home
-for f in *; do
-    [ -L "$f" ] || continue
-    target="$(readlink "$f")"
-    [ -z "${target##../.home/*}" ] || continue
-    rm -f "$f"
-done
+cd "$HOME"/.home/ || die "Cannot change to $HOME/.home/."
 
-for src in ../.home/*/bin/*; do
-    [ -f "$src" ] \
-        && { ln -s "$src" 2>/dev/null || warn "Conflict in bin/: $src"; }
+for module in *; do
+    [[ "$module" =~ ^[A-Za-z0-9_-]+$ ]] || continue
+    oldifs="$IFS"
+    IFS=$'\n'
+    for src in $(find "$module/bin" "$module/dot/" 2>/dev/null | sort); do
+        set_dest_target "$src"
+        # check if dest is dangling link into .home
+        if [ -L ../"$dest" ]; then
+            # Remove dangling links into ~/.home/
+            link_target="$(readlink -f ../"$dest")"
+            [[ "$link_target" =~ ^$HOME ]] \
+                && [ ! -e "$link_target" ] \
+                && rm -f ../"$dest"
+        fi
+        if [ -d "$src" ]; then
+            mkdir -p "../$dest" 2>/dev/null || warn "Conflict: .home/$src/"
+        elif [ -f "$src" ]; then
+            [ "$(readlink "../$dest")" = "$target" ] && continue
+            ln -s "$target" "../$dest" 2>/dev/null \
+                || warn "Conflict: .home/$src"
+        else
+            : # Ignore anything that's not a dir or file.
+        fi
+    done
+    IFS="$oldifs"
 done

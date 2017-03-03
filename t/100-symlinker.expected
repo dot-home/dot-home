@@ -1,28 +1,50 @@
 ############################################################
 # Input
 #
-#  Source files to be linked in .home
+#  .home/*/bin/foo is linked into ~/bin/foo
 .home/a/bin/a hello world
-#
-#  We ignore subdirs.
+.home/a/bin/already linked
+.home/a/bin/dangling pointed to b
 .home/a/bin/dir/sub dir/subfile
 #
 #  Conflicts with files in and out of ~/.home
 .home/a/bin/in-home conflict
+.home/b/bin/a hello world/.keep
 .home/b/bin/in-home conflict
 .home/b/bin/out-home conflict
+#
+# .home/*/dot/foo is linked into ~/.foo
+.home/b/dot/in home
+.home/b/dot/sub dir/under home
 #
 ############################################################
 # Output
 #
-#  This has been removed because it points inside .home
-#bin/dangling inside -> ../.home/a/bin/dangling inside
+#  .home/*/dot/foo/bar is linked to .foo/bar
+.in home -> .home/b/dot/in home
+.sub dir/under home -> ../.home/b/dot/sub dir/under home
 #
 #  Files in .home/*/bin/ are linked
 bin/a hello world -> ../.home/a/bin/a hello world
 #
+#  No error if the file was already linked
+bin/already linked -> ../.home/a/bin/already linked
+#
+#  This is not removed because, though it points inside ~/.home/,
+#  there is no `.home/*/bin/dangling inside` that would trigger
+#  us to look at it.
+bin/dangling inside -> ../.home/a/bin/dangling inside
+#
 #  Links pointing outside .home do not get removed.
 bin/dangling outside -> ../a b c/dangling outside
+#
+#  The dangling link in ~/bin was removed because it pointed to
+#  a non-existent file in ~/.home that we want to replace with a
+#  link to an actual file elsewhere in ~/.home.
+bin/dangling pointed to b -> ../.home/a/bin/dangling pointed to b
+#
+#  Subdirs are created; files under them are linked.
+bin/dir/sub dir/subfile -> ../../../.home/a/bin/dir/sub dir/subfile
 #
 #  First file gets linked; subsequent warn about conflict
 bin/in-home conflict -> ../.home/a/bin/in-home conflict
