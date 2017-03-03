@@ -4,7 +4,7 @@
 #  Conflicts with files in and out of ~/.home
 .home/a/bin/in-home conflict
 #  We ignore subdirs.
-.home/a/bin/subdir/.keep
+.home/a/bin/sub dir/sub sub dir/subfile
 .home/b/bin/in-home conflict
 .home/b/bin/out-home conflict
 #
