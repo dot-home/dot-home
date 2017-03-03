@@ -3,12 +3,11 @@
 # To-do:
 # * learn to link .home/dot/**{!.inb?} files
 
-warn() {
-    echo -e 2>&1 ".home WARNING:" "$@"
-}
+die()  { echo -e 2>&1 ".home ERROR:" "$@"; exit 1; }
+warn() { echo -e 2>&1 ".home WARNING:" "$@"; }
 
 mkdir -p "$HOME"/bin
-cd "$HOME"/bin
+cd "$HOME"/bin/ || die "Cannot change to $HOME/bin/."
 
 # First pass, remove dangling links pointing into .home
 for f in *; do
