@@ -1,21 +1,30 @@
+############################################################
+# Input
 #
-#  Source files in .home
-.home/a/bin/hello world
+#  Source files to be linked in .home
+.home/a/bin/a hello world
+#
+#  We ignore subdirs.
+.home/a/bin/dir/sub dir/subfile
+#
 #  Conflicts with files in and out of ~/.home
 .home/a/bin/in-home conflict
-#  We ignore subdirs.
-.home/a/bin/sub dir/sub sub dir/subfile
 .home/b/bin/in-home conflict
 .home/b/bin/out-home conflict
+#
+############################################################
+# Output
 #
 #  This has been removed because it points inside .home
 #bin/dangling inside -> ../.home/a/bin/dangling inside
 #
+#  Files in .home/*/bin/ are linked
+bin/a hello world -> ../.home/a/bin/a hello world
+#
 #  Links pointing outside .home do not get removed.
 bin/dangling outside -> ../a b c/dangling outside
 #
-#  Files in .home/*/bin/ are linked
-bin/hello world -> ../.home/a/bin/hello world
+#  First file gets linked; subsequent warn about conflict
 bin/in-home conflict -> ../.home/a/bin/in-home conflict
 #
 #  File from "outside" of ~/.home/ system
