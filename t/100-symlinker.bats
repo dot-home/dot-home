@@ -32,9 +32,10 @@ setup_home() {
             -o          -print \
         | sed -e 's,^\./,,' | sort >"$actual")
 
+    local diff_ok=true; diff -u "$expected" "$actual" || diff_ok=false
     assert_output <<____
 .home WARNING: Conflict in bin/: ../.home/b/bin/in-home conflict
 .home WARNING: Conflict in bin/: ../.home/b/bin/out-home conflict
 ____
-    diff -u "$expected" "$actual"
+    assert $diff_ok
 }
