@@ -3,6 +3,12 @@ set -e
 
 basedir=$(cd $(dirname "$0") && pwd -P)
 
+# We use `sort` and various other localized commands in the tests;
+# make sure that we always have a consistent sorting order regardless
+# of the user's locale.
+#
+export LC_COLLATE=C
+
 # Remove empty directories under mock-home because otherwise these are
 # part of the test and can create problems for earlier, buggy versions
 # of the symlinker, blowing up regression tests that check out old
