@@ -34,7 +34,11 @@ for module in *; do
     [[ "$module" =~ ^[A-Za-z0-9_-]+$ ]] || continue
     oldifs="$IFS"
     IFS=$'\n'
-    for src in $(find "$module/bin" "$module/dot/" 2>/dev/null | sort); do
+    for src in $(find 2>/dev/null                           \
+        "$module/bin" "$module/dot/"                        \
+        ! -regex '.*\.inb[0-9]'                             \
+        | sort)
+    do
         set_dest_target "$src"
         # check if dest is dangling link into .home
         if [ -L ../"$dest" ]; then

@@ -17,6 +17,11 @@
 .home/b/dot/in home
 .home/b/dot/sub dir/under home
 #
+#  *.inb[0-9] are ignored
+.home/b/dot/vimrc.inb0
+.home/b/dot/vimrc.inb4
+.home/b/dot/vimrc.inb9
+#
 ############################################################
 # Output
 #
