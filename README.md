@@ -12,6 +12,6 @@ are woefully incomplete.
 building of configuration and other files typically found in a home
 directory.
 
-This `,dot-home` repo, placed in `~/.home/,dot-home` is the "master"
+This `_dot-home` repo, placed in `~/.home/_dot-home` is the "master"
 repo that handles dealing with the building and installation of material
 found in all repos under `~/.home/`.
