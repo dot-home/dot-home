@@ -22,13 +22,6 @@ check_submodules() {
 #
 export LC_COLLATE=C
 
-# Remove empty directories under mock-home because otherwise these are
-# part of the test and can create problems for earlier, buggy versions
-# of the symlinker, blowing up regression tests that check out old
-# versions.
-#
-find $basedir/t/mock-home -type d -empty -delete
-
 cd "$basedir"
 check_submodules
 bats/bin/bats "${@:-t/}"
