@@ -35,7 +35,7 @@ for module in *; do
     oldifs="$IFS"
     IFS=$'\n'
     for src in $(find 2>/dev/null                           \
-        "$module/bin" "$module/dot/"                        \
+        "$module/bin" "$module/dot"                         \
         ! -regex '.*\.inb[0-9]'                             \
         | sort)
     do
