@@ -43,8 +43,8 @@ for module in *; do
         # check if dest is dangling link into .home
         if [ -L ../"$dest" ]; then
             # Remove dangling links into ~/.home/
-            link_target="$(readlink -f ../"$dest")"
-            [[ "$link_target" =~ ^$HOME ]] \
+            link_target="$(readlink ../"$dest")"
+            [[ "$link_target" =~ ^${target%%/.home/*}/.home/ ]] \
                 && [ ! -e "$link_target" ] \
                 && rm -f ../"$dest"
         fi

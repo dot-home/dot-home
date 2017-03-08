@@ -4,7 +4,7 @@
 #  .home/*/bin/foo is linked into ~/bin/foo
 .home/a/bin/a hello world
 .home/a/bin/already linked
-.home/a/bin/dangling pointed to b
+.home/a/bin/dangling/pointed to b
 .home/a/bin/dir/sub dir/subfile
 #
 #  Conflicts with files in and out of ~/.home
@@ -32,7 +32,7 @@
 #  Files in .home/*/bin/ are linked
 bin/a hello world -> ../.home/a/bin/a hello world
 #
-#  No error if the file was already linked
+#  No error if the file was already linked to correct place
 bin/already linked -> ../.home/a/bin/already linked
 #
 #  This is not removed because, though it points inside ~/.home/,
@@ -46,7 +46,7 @@ bin/dangling outside -> ../a b c/dangling outside
 #  The dangling link in ~/bin was removed because it pointed to
 #  a non-existent file in ~/.home that we want to replace with a
 #  link to an actual file elsewhere in ~/.home.
-bin/dangling pointed to b -> ../.home/a/bin/dangling pointed to b
+bin/dangling/pointed to b -> ../../.home/a/bin/dangling/pointed to b
 #
 #  Subdirs are created; files under them are linked.
 bin/dir/sub dir/subfile -> ../../../.home/a/bin/dir/sub dir/subfile
