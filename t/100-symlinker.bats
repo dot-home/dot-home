@@ -1,19 +1,34 @@
 load 'test_helper/bats-support/load'
 load 'test_helper/bats-assert/load'
 
-setup_home() {
-    test_home="$build_t_dir/home"
+setup() {
+    test_suite_name="$(basename "$BATS_TEST_FILENAME" .bats)"
+    test_suite_path="$BATS_TEST_DIRNAME/$test_suite_name"
+    test_name="${BATS_TEST_NAME//test_/}"       # Still has other Bats changes
+    test_scratch_dir="$build_t_dir/$test_suite_name/$test_name"
+
+    # Tests must create $test_scratch_dir if they want it.
+    # We assert it's not there to avoid collisions between tests.
+    [ ! -d "$test_scratch_dir" ] || {
+        echo >&2 "test_scratch_dir collision: ${test_scratch_dir/$base_dir?}"
+        false
+    }
+}
+
+setup_test_home() {
+    test_home="$test_scratch_dir/home"
+    mkdir -p "$test_scratch_dir"
     cp -r "$BATS_TEST_DIRNAME/mock-home" "$test_home"
 }
 
 @test "symlinker" {
-    setup_home
+    setup_test_home
     HOME="$test_home" run "$BATS_TEST_DIRNAME/../bin/dot-home-setup"
 
-    local expected="$build_t_dir/home.expected"
+    local expected="$test_scratch_dir/home.expected"
     sed -e '/^#/d' "$BATS_TEST_DIRNAME/100-symlinker.expected" >"$expected"
 
-    local actual="$build_t_dir/home.actual"
+    local actual="$test_scratch_dir/home.actual"
     (cd $test_home && find . \
                -type l  -exec bash -c 'echo -n {} "-> "; readlink "{}"' \; \
             -o -type d  -true  \
