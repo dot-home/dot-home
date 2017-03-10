@@ -23,5 +23,5 @@ test_lib_setup() {
 setup_test_home() {
     test_home="$test_scratch_dir/home"
     mkdir -p "$test_scratch_dir"
-    cp -r "$test_suite_path.home" "$test_home"
+    cp -R "$test_suite_path.home" "$test_home"
 }
