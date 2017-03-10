@@ -1,0 +1,23 @@
+inb4 TODO
+=========
+
+The symlinker will install symlinks in the normal way for the
+_installed_ inb4 files, e.g.
+
+    .home/_inb4/dot/ssh/config
+    .ssh/config -> ../.home/_inb4/dot/ssh/config
+
+Before the symlinker runs the inb4 builder must run. First it
+compares the _built_ and _installed_ files and if they are
+different, aborts (because the installed version has been
+modified since it was built):
+
+    .home/,inb4/dot/ssh/config
+    .home/_inb4/dot/ssh/config
+
+If they are the same, we build the new version to _built_, copy it to
+_installed_, and then we're done and we can carry on and run the
+symlinker.
+
+If they're different we can
+    diff -u .home/?inb4/dot/ssh/config
