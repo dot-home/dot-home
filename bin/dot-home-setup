@@ -63,7 +63,7 @@ link_target() {
     fi
 }
 
-symlinker() {
+symlink_home() {
     for module in *; do
         [[ "$module" =~ ^[A-Za-z0-9_-]+$ ]] || continue
         save_ifs $'\n'
@@ -95,9 +95,21 @@ symlinker() {
     done
 }
 
+inb4_home() {
+    :
+}
+
 ############################################################
 
-[ _"$1" = _--define-functions-only ] && { return 0; exit 0; }
+passes=()
+while [ -n "$1" ]; do case "$1" in
+    --define-functions-only)    return 0; exit 0;;
+    -p)                         passes+=("$2"); shift; shift;;
+    *)                          die "Unknown argument: $1";;
+esac; done
+[ -z "$passes" ] && passes=(inb4 symlink)
 
 cd "$HOME"/.home/ 2>/dev/null || die "Cannot change to $HOME/.home/."
-symlinker
+for p in "${passes[@]}"; do
+    ${p}_home
+done

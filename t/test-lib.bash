@@ -55,7 +55,7 @@ create_test_home() {
 }
 
 run_setup_on_test_home() {
-    HOME="$test_home" run "$base_dir/bin/dot-home-setup"
+    HOME="$test_home" run "$base_dir/bin/dot-home-setup" "$@"
 }
 
 diff_test_home_with() {
