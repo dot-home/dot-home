@@ -9,6 +9,9 @@ set -o pipefail
 die()  { echo -e >&2 ".home ERROR:" "$@"; exit 1; }
 warn() { echo -e >&2 ".home WARNING:" "$@"; }
 
+save_ifs() { oldifs="$IFS"; IFS="$1"; }
+restore_ifs() { IFS="$oldifs"; }
+
 set_dest_target() {
     local src="$1"      # relative to ~/.home/
     # non-local outputs:
@@ -26,8 +29,7 @@ set_dest_target() {
 symlinker() {
     for module in *; do
         [[ "$module" =~ ^[A-Za-z0-9_-]+$ ]] || continue
-        oldifs="$IFS"
-        IFS=$'\n'
+        save_ifs $'\n'
         for src in $(find 2>/dev/null                           \
             "$module/bin" "$module/dot"                         \
             ! -regex '.*\.inb[0-9]'                             \
@@ -52,7 +54,7 @@ symlinker() {
                 : # Ignore anything that's not a dir or file.
             fi
         done
-        IFS="$oldifs"
+        restore_ifs
     done
 }
 
