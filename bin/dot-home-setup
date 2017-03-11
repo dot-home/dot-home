@@ -26,8 +26,6 @@ set_dest_target() {
 
 [ _"$1" = _--define-functions-only ] && { return 0; exit 0; }
 
-mkdir -p "$HOME"/.home/,build
-
 cd "$HOME"/.home/ || die "Cannot change to $HOME/.home/."
 
 for module in *; do
