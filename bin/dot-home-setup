@@ -96,7 +96,19 @@ symlink_home() {
 }
 
 inb4_home() {
-    :
+    local oldifs="$IFS"; IFS=$'\n'
+    local outputs=($(
+        find . -name '*.inb[0-9]' \
+        | sed -e s,./[^/]*/,, -e 's,\.inb[0-9]$,,' \
+        | sort -u
+    ))
+    IFS="$oldifs"
+
+    local output
+    for output in "${outputs[@]}"; do
+        mkdir -p "$(dirname ",inb4/$output")"
+        touch ",inb4/$output"
+    done
 }
 
 ############################################################

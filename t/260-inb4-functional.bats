@@ -19,8 +19,8 @@ teardown() {
     run_setup_on_test_home -p inb4
     diff_test_home_with <<.
         # _built_ files
-        #.home/,inb4/dot/2 subdir/config
-        #.home/,inb4/dot/3 subdir/config
+        .home/,inb4/dot/2 subdir/config
+        .home/,inb4/dot/3 subdir/config
 
         # _installed_ files
         #.home/_inb4/dot/2 subdir/config
