@@ -17,6 +17,7 @@ set_dest_target() {
 
     dest="${src#*/}"
     dest="${dest/#dot\//.}"
+    [ "$dest" = dot ] && dest=.     # dest is the 'dot' directory itself (no /)
 
     local slashes="${dest//[^\/]/}"    # Leave only slashes...
     target="${slashes//\//../}.home/$src"

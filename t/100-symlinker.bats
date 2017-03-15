@@ -10,7 +10,7 @@ load 'test-lib'
     local actual="$test_scratch_dir/home.actual"
     (cd $test_home && find . \
                -type l  -exec bash -c 'echo -n {} "-> "; readlink "{}"' \; \
-            -o -type d  -true  \
+            -o -type d \! -empty -true \
             -o          -print \
         | sed -e 's,^\./,,' | sort >"$actual")
 
