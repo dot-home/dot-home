@@ -5,7 +5,8 @@ load 'test-lib'
     HOME="$test_home" run "$BATS_TEST_DIRNAME/../bin/dot-home-setup"
 
     local expected="$test_scratch_dir/home.expected"
-    sed -e '/^#/d' "$BATS_TEST_DIRNAME/100-symlinker.expected" >"$expected"
+    sed -e '/^$/d' -e '/^#/d' \
+        "$BATS_TEST_DIRNAME/100-symlinker.expected" >"$expected"
 
     local actual="$test_scratch_dir/home.actual"
     (cd $test_home && find . \
