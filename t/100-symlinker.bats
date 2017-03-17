@@ -1,7 +1,7 @@
 load 'test-lib'
 
 @test "symlinker" {
-    setup_test_home
+    setup_test_suite_home
     HOME="$test_home" run "$BATS_TEST_DIRNAME/../bin/dot-home-setup"
 
     local expected="$test_scratch_dir/home.expected"

@@ -20,7 +20,7 @@ test_lib_setup() {
     }
 }
 
-setup_test_home() {
+setup_test_suite_home() {
     test_home="$test_scratch_dir/home"
     mkdir -p "$test_scratch_dir"
     cp -R "$test_suite_path.home" "$test_home"
