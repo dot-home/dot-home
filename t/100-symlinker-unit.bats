@@ -1,25 +1,5 @@
 load 'test-lib'
 
-@test "symlinker" {
-    setup_test_suite_home
-    HOME="$test_home" run "$BATS_TEST_DIRNAME/../bin/dot-home-setup"
-
-    local expected="$test_scratch_dir/home.expected"
-    sed -e '/^$/d' -e '/^#/d' \
-        "$BATS_TEST_DIRNAME/100-symlinker.expected" >"$expected"
-
-    local actual="$test_scratch_dir/home.actual"
-    (cd $test_home && find . \
-               -type l  -exec bash -c 'echo -n {} "-> "; readlink "{}"' \; \
-            -o -type d \! -empty -true \
-            -o          -print \
-        | sed -e 's,^\./,,' | sort >"$actual")
-
-    local diff_ok=true; diff -u "$expected" "$actual" || diff_ok=false
-    assert_output ''
-    assert $diff_ok
-}
-
 @test "set_dest_target" {
     export HOME=/dev/null
     source "$BATS_TEST_DIRNAME/../bin/dot-home-setup" --define-functions-only
