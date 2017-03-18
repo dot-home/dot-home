@@ -1,0 +1,164 @@
+#
+# XXX We have broken tests below that are skipped!
+#
+
+load 'test-lib'
+
+teardown() {
+    assert_test_home
+}
+
+@test "Non-existent ~/.home does ???" {
+    skip # XXX
+    create_test_home </dev/null
+    run_setup_on_test_home
+    diff_test_home_with </dev/null
+    assert_output ''
+}
+
+@test "no pre-existing symlinks" {
+    create_test_home <<.
+        .home/AAA/bin/a file
+        .home/BBB/bin/a dir/a file
+        .home/AAA/dot/a file
+        .home/BBB/dot/a dir/a file
+.
+    run_setup_on_test_home
+    diff_test_home_with <<.
+        bin/a file -> ../.home/AAA/bin/a file
+        bin/a dir/a file -> ../../.home/BBB/bin/a dir/a file
+        .a file -> .home/AAA/dot/a file
+        .a dir/a file -> ../.home/BBB/dot/a dir/a file
+.
+    assert_output ''
+}
+
+@test "pre-existing correct symlink untouched" {
+    create_test_home <<.
+        .home/AAA/dot/config
+        .config -> .home/AAA/dot/config
+.
+    run_setup_on_test_home
+    diff_test_home_with <<.
+        .config -> .home/AAA/dot/config
+.
+    assert_output ''
+}
+
+@test "pre-existing incorrect symlink into .home just alerts" {
+    create_test_home <<.
+        .home/FIRST/dot/config
+        .home/SECOND/dot/config
+        .config -> .home/SECOND/dot/config
+.
+    run_setup_on_test_home
+    diff_test_home_with <<.
+        # Would be linked to FIRST if link didn't already exist
+        .config -> .home/SECOND/dot/config
+.
+    assert_output '.home WARNING: Conflict: .home/FIRST/dot/config'
+}
+
+@test "untriggered pre-existing symlink into .home" {
+    create_test_home <<.
+        .home/AAA/just so .home exists  # because non-existent .home test above
+        .config -> .home/gone/dot/config
+.
+    run_setup_on_test_home
+    diff_test_home_with <<.
+        #  This is not removed because, though it points inside ~/.home/,
+        #  there is no .home/*/bin/dangling inside that would trigger
+        #  us to look at it.
+        .config -> .home/gone/dot/config
+.
+    assert_output ''
+}
+
+@test "conflicts with files in .home" {
+    create_test_home <<.
+        .home/AAA/dot/config
+        .home/BBB/dot/config
+        .home/CCC/dot/config/ha ha it's a dir!
+.
+    run_setup_on_test_home
+    diff_test_home_with <<.
+       .config -> .home/AAA/dot/config
+.
+    assert_output <<.
+.home WARNING: Conflict: .home/BBB/dot/config
+.home WARNING: Conflict: .home/CCC/dot/config/
+.home WARNING: Conflict: .home/CCC/dot/config/ha ha it's a dir!
+.
+}
+
+# Existing files never get overwritten.
+@test "conflicts with files and symlinks outside of .home" {
+    create_test_home <<.
+        .home/AAA/dot/config
+        .config
+        .home/AAA/dot/linked
+        .linked -> .other-file
+.
+    run_setup_on_test_home
+    diff_test_home_with <<.
+        .config
+        .linked -> .other-file
+.
+    assert_output <<.
+.home WARNING: Conflict: .home/AAA/dot/config
+.home WARNING: Conflict: .home/AAA/dot/linked
+.
+}
+
+# XXX This test should be replaced by
+# the one below it once we fix the bug.
+#
+@test "XXX INCOMPLETE pre-existing dangling symlink into home" {
+    create_test_home <<.
+        .home/AAA/bin/a file
+        .home/AAA/dot/a file
+        .home/AAA/dot/a dir/a file
+        bin/a file -> ../.home/does not/exist at/all
+        .a dir/a file -> ../.home/does not/exist at/all
+.
+    run_setup_on_test_home
+    diff_test_home_with <<.
+        bin/a file -> ../.home/AAA/bin/a file
+        .a file -> .home/AAA/dot/a file
+        .a dir/a file -> ../.home/AAA/dot/a dir/a file
+.
+    assert_output ''
+}
+
+@test "pre-existing dangling symlink into .home" {
+    skip # XXX
+    create_test_home <<.
+        .home/AAA/bin/a file
+        .home/AAA/dot/a file
+        .home/AAA/dot/a dir/a file
+        bin/a file -> ../.home/does not/exist at/all
+        .a file -> .home/does not/exist at/all
+        .a dir/a file -> ../.home/does not/exist at/all
+.
+    run_setup_on_test_home
+    diff_test_home_with <<.
+        bin/a file -> ../.home/AAA/bin/a file
+        .a file -> .home/AAA/dot/a file
+        .a dir/a file -> ../.home/AAA/dot/a dir/a file
+.
+    assert_output ''
+}
+
+@test "inb4 files are ignored" {
+    create_test_home <<.
+        .home/AAA/dot/dir/config1
+        .home/AAA/dot/dir/config2.inb4
+        .home/BBB/dot/dir/config2.inb0
+        .home/CCC/dot/dir/config2.inb9
+.
+    run_setup_on_test_home
+    diff_test_home_with <<.
+        .dir/config1 -> ../.home/AAA/dot/dir/config1
+.
+    assert_output ''
+}

@@ -16,12 +16,7 @@ load 'test-lib'
         | sed -e 's,^\./,,' | sort >"$actual")
 
     local diff_ok=true; diff -u "$expected" "$actual" || diff_ok=false
-    assert_output <<____
-.home WARNING: Conflict: .home/b/bin/a hello world/
-.home WARNING: Conflict: .home/b/bin/a hello world/.keep
-.home WARNING: Conflict: .home/b/bin/in-home conflict
-.home WARNING: Conflict: .home/b/bin/out-home conflict
-____
+    assert_output ''
     assert $diff_ok
 }
 
