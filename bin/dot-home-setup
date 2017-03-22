@@ -54,6 +54,15 @@ canonicalize_dots() {
     restore_ifs
 }
 
+link_target() {
+    local target="$(readlink "$1")"
+    if [ "${target:0:1}" = / ]; then
+        canonicalize_dots "$target"
+    else
+        canonicalize_dots "$(dirname "$1")/$target"
+    fi
+}
+
 symlinker() {
     for module in *; do
         [[ "$module" =~ ^[A-Za-z0-9_-]+$ ]] || continue
@@ -67,8 +76,8 @@ symlinker() {
             # check if dest is dangling link into .home
             if [ -L ../"$dest" ]; then
                 # Remove dangling links into ~/.home/
-                link_target="$(readlink ../"$dest")"
-                [[ "$link_target" =~ ^${target%%/.home/*}/.home/ ]] \
+                link_target="$(link_target $HOME/$dest)"
+                [[ "$link_target" =~ ^$HOME/.home/ ]] \
                     && [ ! -e "$link_target" ] \
                     && rm -f ../"$dest"
             fi

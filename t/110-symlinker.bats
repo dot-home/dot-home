@@ -121,40 +121,22 @@ teardown() {
 .
 }
 
-# XXX This test should be replaced by
-# the one below it once we fix the bug.
-#
-@test "XXX INCOMPLETE pre-existing dangling symlink into home" {
-    create_test_home <<.
-        .home/AAA/bin/a file
-        .home/AAA/dot/a file
-        .home/AAA/dot/a dir/a file
-        bin/a file -> ../.home/does not/exist at/all
-        .a dir/a file -> ../.home/does not/exist at/all
-.
-    run_setup_on_test_home
-    diff_test_home_with <<.
-        bin/a file -> ../.home/AAA/bin/a file
-        .a file -> .home/AAA/dot/a file
-        .a dir/a file -> ../.home/AAA/dot/a dir/a file
-.
-    assert_output ''
-}
-
 @test "pre-existing dangling symlink into .home" {
-    skip # XXX
     create_test_home <<.
         .home/AAA/bin/a file
         .home/AAA/dot/a file
+        .home/AAA/dot/an absolute link
         .home/AAA/dot/a dir/a file
         bin/a file -> ../.home/does not/exist at/all
         .a file -> .home/does not/exist at/all
         .a dir/a file -> ../.home/does not/exist at/all
+        .an absolute link -> $test_home/.home/does not/exist at/all
 .
     run_setup_on_test_home
     diff_test_home_with <<.
         bin/a file -> ../.home/AAA/bin/a file
         .a file -> .home/AAA/dot/a file
+        .an absolute link -> .home/AAA/dot/an absolute link
         .a dir/a file -> ../.home/AAA/dot/a dir/a file
 .
     assert_output ''
