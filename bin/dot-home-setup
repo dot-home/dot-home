@@ -60,5 +60,5 @@ symlinker() {
 
 [ _"$1" = _--define-functions-only ] && { return 0; exit 0; }
 
-cd "$HOME"/.home/ || die "Cannot change to $HOME/.home/."
+cd "$HOME"/.home/ 2>/dev/null || die "Cannot change to $HOME/.home/."
 symlinker

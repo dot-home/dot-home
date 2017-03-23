@@ -1,18 +1,29 @@
-#
-# XXX We have broken tests below that are skipped!
-#
-
 load 'test-lib'
 
 teardown() {
     assert_test_home
 }
 
-@test "Non-existent ~/.home does ???" {
-    skip # XXX
+@test "Non-existent ~/.home" {
     create_test_home </dev/null
     run_setup_on_test_home
-    diff_test_home_with </dev/null
+    diff_test_home_with <<.
+        .
+.
+    assert_failure
+    assert_output -p '.home ERROR: Cannot change to'
+}
+
+@test "No modules in ~/.home" {
+    create_test_home <<.
+        .home/.ignored
+        bin/whatever
+.
+    run_setup_on_test_home
+    diff_test_home_with <<.
+        .home/.ignored
+        bin/whatever
+.
     assert_output ''
 }
 
