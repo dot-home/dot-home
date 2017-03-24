@@ -49,7 +49,7 @@ create_test_home() {
         if [ -n "$target" ]; then
             ln -s "$target" "$abs_path"
         else
-            echo "$path" > "$abs_path"
+            echo "Content of $path" > "$abs_path"
         fi
     done < <(sed -e 's/#.*//' -e '/^ *$/d')
 }
