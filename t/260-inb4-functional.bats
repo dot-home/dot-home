@@ -4,6 +4,11 @@ teardown() {
     assert_test_home
 }
 
+assert_output_file() {
+    sed -e 's/^  *//' \
+    | diff -u --label expected - --label ".home/$1" "$test_home/.home/$1"
+}
+
 @test "run inb4" {
     create_test_home <<.
         .home/A/dot/0 subdir/ignored
@@ -12,6 +17,8 @@ teardown() {
         .home/B/dot/2 subdir/config.inb3
         .home/B/dot/2 subdir/config.inb5
         .home/C/dot/2 subdir/config.inb4
+
+        .home/D/dot/other module ignored
 
         # Same name but different subdir
         .home/C/dot/3 subdir/config.inb4
@@ -27,4 +34,15 @@ teardown() {
         #.home/_inb4/dot/3 subdir/config
 .
     assert_output ''
+
+    assert_output_file ',inb4/dot/2 subdir/config' <<.
+        Content of .home/A/dot/2 subdir/config.inb4
+        Content of .home/B/dot/2 subdir/config.inb3
+        Content of .home/B/dot/2 subdir/config.inb5
+        Content of .home/C/dot/2 subdir/config.inb4
+.
+
+    assert_output_file ',inb4/dot/3 subdir/config' <<.
+        Content of .home/C/dot/3 subdir/config.inb4
+.
 }

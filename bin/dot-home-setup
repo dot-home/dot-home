@@ -108,6 +108,7 @@ inb4_home() {
     for output in "${outputs[@]}"; do
         mkdir -p "$(dirname ",inb4/$output")"
         touch ",inb4/$output"
+        cat */"$output".inb[0-9] > ",inb4/$output"
     done
 }
 
