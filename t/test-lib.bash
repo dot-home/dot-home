@@ -31,6 +31,7 @@ create_test_home() {
     mkdir -p "$test_home"
     home_expected="$test_scratch_dir/home.expected"
 
+    local path target
     while read path; do
         # Short-cut to include "non-build/install" .home files in expected
         # output so we don't have to do so manually in the expected output
@@ -38,14 +39,14 @@ create_test_home() {
         [[ "$path" =~ ^.home/[A-Za-z0-9] ]] && echo "$path" >> "$home_expected"
 
         if [[ "$path" =~ ' -> ' ]]; then
-            local target="${path##* -> }"
-            local path="${path%% -> *}"
+            target="${path##* -> }"
+            path="${path%% -> *}"
         fi
 
         local abs_path="$test_home/$path"
         mkdir -p "$(dirname "$abs_path")"
 
-        if [ -v target ]; then
+        if [ -n "$target" ]; then
             ln -s "$target" "$abs_path"
         else
             echo "$path" > "$abs_path"
