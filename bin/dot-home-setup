@@ -26,6 +26,34 @@ set_dest_target() {
     target="${slashes//\//../}.home/$src"
 }
 
+canonicalize_dots() {
+    save_ifs '/'
+
+    local -a output=()
+    for component in $1; do
+        case "$component" in
+        '')     ;;
+        .)      ;;
+        ..)     if    [ "${#output[@]}" -eq 0 ] \
+                   || [ "${output[${#output[@]} -1]}" = '..' ]
+                then
+                    output+=("$component")
+                else
+                    unset "output[${#output[@]} - 1]"
+                fi
+                ;;
+        *)      output+=("$component");;
+        esac
+    done
+
+    local leading_slash trailing_slash
+    [ "${1:0:1}" = / ] && leading_slash=/
+    [ "${1: -1}" = / ] && trailing_slash=/
+    echo "$leading_slash${output[*]}$trailing_slash"
+
+    restore_ifs
+}
+
 symlinker() {
     for module in *; do
         [[ "$module" =~ ^[A-Za-z0-9_-]+$ ]] || continue
