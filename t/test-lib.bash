@@ -18,16 +18,16 @@ test_lib_setup() {
         echo >&2 "test_scratch_dir collision: ${test_scratch_dir/$base_dir?}"
         false
     }
+
+    test_home="$test_scratch_dir/home"
 }
 
-setup_test_suite_home() {
-    test_home="$test_scratch_dir/home"
+create_test_home_with_test_suite_data() {
     mkdir -p "$test_scratch_dir"
     cp -R "$test_suite_path.home" "$test_home"
 }
 
 create_test_home() {
-    test_home="$test_scratch_dir/home"
     mkdir -p "$test_home"
     home_expected="$test_scratch_dir/home.expected"
 
