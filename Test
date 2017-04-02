@@ -14,11 +14,16 @@ check_submodules() {
 build_3tools() {
     local prefix="$1"
     local archive_dir="$base_dir/.archive"
+
+    mkdir -p "$archive_dir" "$prefix/src"
+    build_bash
+    build_sed
+}
+
+build_bash() {
     local bash_ver=bash-3.2.57
     local bash_tarball=$bash_ver.tar.gz
     local src_dir="$prefix/src/$bash_ver"
-
-    mkdir -p "$archive_dir" "$prefix/src"
 
     [ -s "$archive_dir/$bash_tarball" ] \
         || wget -O "$archive_dir/$bash_tarball" \
@@ -32,6 +37,30 @@ build_3tools() {
         && ./configure --prefix="$prefix" \
         && make -j 8 \
         && make install MAKEINFO=true
+    )
+}
+
+build_sed() {
+    local text_cmds_ver=text_cmds-87
+    local text_cmds_tarball=$text_cmds_ver.tar.gz
+    local src_dir="$prefix/src/$text_cmds_ver/sed"
+
+    [ -s "$archive_dir/$text_cmds_tarball" ] \
+        || wget -O "$archive_dir/$text_cmds_tarball" \
+            "https://opensource.apple.com/tarballs/text_cmds/$text_cmds_tarball"
+
+    [ -s "$src_dir/main.c" ] \
+        || tar -x -C "$prefix/src" -f "$archive_dir/$text_cmds_tarball"
+
+    sed -e '
+        /if(setlinebuf(stdout) != 0)/ {
+            s//setlinebuf(stdout);/
+            n
+            d
+        }' -i $src_dir/main.c
+    [ -x "$prefix/bin/sed" ] || (
+           cd "$src_dir" \
+        && gcc -D'__FBSDID(x)=' -o $prefix/bin/sed "$@" *.c -lbsd
     )
 }
 
