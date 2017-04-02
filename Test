@@ -11,6 +11,30 @@ check_submodules() {
     }
 }
 
+build_3tools() {
+    local prefix="$1"
+    local archive_dir="$base_dir/.archive"
+    local bash_ver=bash-3.2.57
+    local bash_tarball=$bash_ver.tar.gz
+    local src_dir="$prefix/src/$bash_ver"
+
+    mkdir -p "$archive_dir" "$prefix/src"
+
+    [ -s "$archive_dir/$bash_tarball" ] \
+        || wget -O "$archive_dir/$bash_tarball" \
+            "https://ftp.gnu.org/gnu/bash/$bash_tarball"
+
+    [ -s "$src_dir/configure" ] \
+        || tar -x -C "$prefix/src" -f "$archive_dir/$bash_tarball"
+
+    [ -x "$prefix/bin/bash" ] || (
+           cd "$src_dir" \
+        && ./configure --prefix="$prefix" \
+        && make -j 8 \
+        && make install MAKEINFO=true
+    )
+}
+
 ############################################################
 # Main
 
@@ -33,4 +57,11 @@ mkdir -p  "$build_t_dir"
 
 cd "$base_dir"
 check_submodules
+export EXPECTED_BASH_VERSINFO=4
+if [ _"$1" = _-3 ]; then        # Test with Bash 3 and other old tools
+    shift
+    build_3tools "$build_dir/local"
+    PATH=$build_dir/local/bin:$PATH
+    EXPECTED_BASH_VERSINFO=3
+fi
 bats/bin/bats "${@:-t/}"

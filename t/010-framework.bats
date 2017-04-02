@@ -20,3 +20,11 @@ test_run_function() { echo test_run_function; return 17; }
     assert [ -d "$build_t_dir" ]
     assert_equal "$(ls -A $build_t_dir)" ''     # Assert empty dir
 }
+
+# Because we're nervous types, we check that we've actually
+# set up properly to use the correct versions of Bash as
+# per the presence/absence of the `-3` option on `Test`.
+#
+@test "expected BASH_VERSINFO" {
+    assert_equal "$EXPECTED_BASH_VERSINFO" "$BASH_VERSINFO"
+}
