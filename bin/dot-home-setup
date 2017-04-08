@@ -63,7 +63,7 @@ link_target() {
     fi
 }
 
-symlink_home() {
+run_symlink_pass() {
     for module in *; do
         [[ "$module" =~ ^[A-Za-z0-9_-]+$ ]] || continue
         save_ifs $'\n'
@@ -114,7 +114,7 @@ inb4_cat() {
     done
 }
 
-inb4_home() {
+run_inb4_pass() {
     local oldifs="$IFS"; IFS=$'\n'
     local outputs=($(
         find . -name '*.inb[0-9]' \
@@ -142,5 +142,5 @@ esac; done
 
 cd "$HOME"/.home/ 2>/dev/null || die "Cannot change to $HOME/.home/."
 for p in "${passes[@]}"; do
-    ${p}_home
+    run_${p}_pass
 done
