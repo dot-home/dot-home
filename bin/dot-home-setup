@@ -114,17 +114,26 @@ inb4_cat() {
     done
 }
 
-run_inb4_pass() {
+inb4check_has_run=false
+declare -a inb4_outputs
+run_inb4check_pass() {
     local oldifs="$IFS"; IFS=$'\n'
-    local outputs=($(
+    inb4_outputs=($(
         find . -name '*.inb[0-9]' \
         | sed -e s,./[^/]*/,, -e 's,\.inb[0-9]$,,' \
         | sort -u
     ))
     IFS="$oldifs"
+    inb4check_has_run=true
+}
 
+run_inb4build_pass() {
+    $inb4check_has_run || {
+        warn 'Must run inb4check pass before inb4build pass'
+        return
+    }
     local output
-    for output in "${outputs[@]}"; do
+    for output in "${inb4_outputs[@]}"; do
         mkdir -p "$(dirname ",inb4/$output")"
         inb4_cat */"$output".inb[0-9] > ",inb4/$output"
     done
@@ -138,7 +147,7 @@ while [ -n "$1" ]; do case "$1" in
     -p)                         passes+=("$2"); shift; shift;;
     *)                          die "Unknown argument: $1";;
 esac; done
-[ -z "$passes" ] && passes=(inb4 symlink)
+[ -z "$passes" ] && passes=(inb4check inb4build symlink)
 
 cd "$HOME"/.home/ 2>/dev/null || die "Cannot change to $HOME/.home/."
 for p in "${passes[@]}"; do

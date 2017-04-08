@@ -9,7 +9,20 @@ assert_output_file() {
     | diff -u --label expected - --label ".home/$1" "$test_home/.home/$1"
 }
 
-@test "run inb4" {
+@test "inb4build requires inb4check" {
+    echo .home/ignored | create_test_home
+    run_setup_on_test_home -p inb4build
+    assert_output --partial 'Must run inb4check pass before inb4build pass'
+}
+
+@test "inb4build pass with no inputs" {
+    create_test_home < <(echo .home/ignored)
+    run_setup_on_test_home -p inb4check -p inb4build
+    diff_test_home_with </dev/null
+    assert_output ''
+}
+
+@test "inb4build pass" {
     create_test_home <<.
         .home/A/dot/0 subdir/ignored
 
@@ -23,7 +36,7 @@ assert_output_file() {
         # Same name but different subdir
         .home/C/dot/3 subdir/config.inb4
 .
-    run_setup_on_test_home -p inb4
+    run_setup_on_test_home -p inb4check -p inb4build
     diff_test_home_with <<.
         # _built_ files
         .home/,inb4/dot/2 subdir/config

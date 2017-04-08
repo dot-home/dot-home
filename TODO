@@ -12,8 +12,9 @@ compares the _built_ and _installed_ files and if they are
 different, aborts (because the installed version has been
 modified since it was built):
 
-    .home/,inb4/dot/ssh/config
-    .home/_inb4/dot/ssh/config
+    .home/stuff/dot/ssh/config.inb4 # source version
+    .home/,inb4/dot/ssh/config      # built version
+    .home/_inb4/dot/ssh/config      # installed version (symlink target)
 
 If they are the same, we build the new version to _built_, copy it to
 _installed_, and then we're done and we can carry on and run the
@@ -21,3 +22,28 @@ symlinker.
 
 If they're different we can
     diff -u .home/?inb4/dot/ssh/config
+
+Passes
+------
+
+We need to run a check pass to determine what to build and emit
+warnings about things it decides not to build; the existing build pass
+will then build just those things that the check pass decided were ok.
+
+#### Check Pass
+
+1. Check all built/installed versions and remove any that do not have
+   a corresponding source version. (Possibly a separate pass)
+
+2. For every file we would build, check _built_ and _installed_:
+   Cases:
+    * Missing _installed_: carry on (initial build)
+    * _built_ same as _installed_: carry on
+    * Otherwise complain:
+        * Missing _built_: complain, but no diff to do
+        * _built_ different from _installed_: complain and diff
+
+#### Build Pass
+
+1. inb4_cat source to _built_ (done)
+2. Copy _built_ to _installed_
