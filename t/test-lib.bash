@@ -51,7 +51,7 @@ create_test_home() {
         else
             echo "Content of $path" > "$abs_path"
         fi
-    done < <(sed -e 's/#.*//' -e '/^ *$/d')
+    done < <(sed -e 's/ *#.*//' -e '/^ *$/d')
 }
 
 run_setup_on_test_home() {
@@ -66,7 +66,7 @@ diff_test_home_with() {
             -o          -print \
         | sed -e 's,^\./,,' | sort >"$home_actual")
 
-    sed -e 's/#.*//' -e 's/^ *//' -e '/^$/d' >> "$home_expected"
+    sed -e 's/ *#.*//' -e 's/^ *//' -e '/^$/d' >> "$home_expected"
     sort -o "$home_expected" "$home_expected"
 
     test_home_diffed_ok=true
