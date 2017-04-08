@@ -43,8 +43,8 @@ assert_output_file() {
         .home/,inb4/dot/3 subdir/config
 
         # _installed_ files
-        #.home/_inb4/dot/2 subdir/config
-        #.home/_inb4/dot/3 subdir/config
+        .home/_inb4/dot/2 subdir/config
+        .home/_inb4/dot/3 subdir/config
 .
     assert_output ''
 
@@ -54,8 +54,12 @@ assert_output_file() {
         Content of .home/C/dot/2 subdir/config.inb4
         Content of .home/B/dot/2 subdir/config.inb5
 .
-
     assert_output_file ',inb4/dot/3 subdir/config' <<.
         Content of .home/C/dot/3 subdir/config.inb4
 .
+
+    local h="$test_home/.home"
+    for i in "dot/2 subdir/config" "dot/3 subdir/config"; do
+        cmp -s "$h/,inb4/$i" "$h/_inb4/$i"
+    done
 }

@@ -114,6 +114,24 @@ inb4_cat() {
     done
 }
 
+inb4_check_file_conflicts() {
+    local output
+    while read output; do
+        local     built=",inb4/$output"
+        local installed="_inb4/$output"
+
+        if [ ! -e "$installed" ]; then
+            echo "$output"
+        elif cmp -s "$built" "$installed"; then
+            echo "$output"
+        elif [ ! -e "$built" ]; then
+            warn "$output has no previously built version to check"
+        else
+            warn "$output has been changed from version built by inb4"
+        fi
+    done
+}
+
 inb4check_has_run=false
 declare -a inb4_outputs
 run_inb4check_pass() {
@@ -121,7 +139,8 @@ run_inb4check_pass() {
     inb4_outputs=($(
         find . -name '*.inb[0-9]' \
         | sed -e s,./[^/]*/,, -e 's,\.inb[0-9]$,,' \
-        | sort -u
+        | sort -u \
+        | inb4_check_file_conflicts
     ))
     IFS="$oldifs"
     inb4check_has_run=true
@@ -134,8 +153,9 @@ run_inb4build_pass() {
     }
     local output
     for output in "${inb4_outputs[@]}"; do
-        mkdir -p "$(dirname ",inb4/$output")"
+        mkdir -p "$(dirname ",inb4/$output")" "$(dirname "_inb4/$output")"
         inb4_cat */"$output".inb[0-9] > ",inb4/$output"
+        cp ",inb4/$output" "_inb4/$output"
     done
 }
 
