@@ -1,9 +1,18 @@
 load 'test-lib'
 
-@test "set_dest_target" {
+setup() {
+    test_lib_setup
     export HOME=/dev/null
     source "$BATS_TEST_DIRNAME/../bin/dot-home-setup" --define-functions-only
+}
 
+@test "warn" {
+    # Cannot use run because it combines stdout and stderr
+    output=$(warn "world will end" 2>&1 >/dev/null)
+    assert_output '.home WARNING: world will end'
+}
+
+@test "set_dest_target" {
     local src dest target
 
     set_dest_target           'a/bin'
