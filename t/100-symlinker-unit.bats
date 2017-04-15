@@ -32,7 +32,6 @@ assert_compares() {
 }
 
 @test "canonicalize_dots" {
-
     local -i compare_failures=0         # lexically scoped
     check() { compare "$(canonicalize_dots "$1")" "$2"; }
 
@@ -87,26 +86,59 @@ assert_compares() {
     # ??? assert_equal $(c aa/..)                    .
 }
 
-@test "set_dest_target" {
-    local src dest target
+@test "add_bin_dest" {
+    input="
+        A/bin/prog
+        B/lib/system/file
+        C/this has/some spaces/in it
+        "
+    expected="
+        src: A/bin/prog
+        dst: bin/prog
+        src: B/lib/system/file
+        dst: lib/system/file
+        src: C/this has/some spaces/in it
+        dst: this has/some spaces/in it
+        "
+    while read src; do
+        read dest
+        echo "src: $src"
+        echo "dst: $dest"
+    done \
+        < <(echo "$input" | trim_spec | add_bin_dest) \
+        | diff -u <(echo "$expected" | trim_spec) -
+}
 
-    set_dest_target           'a/bin'
-    assert_equal    "$dest"     'bin'
-    assert_equal    "$target"   '.home/a/bin'
+@test "add_dot_dest" {
+    input="
+        AAA/dot
+        AAA/dot/conf file
+        BBB/dot/sub dir/conf file
+        C/dot/
+        "
+    expected="
+        src: AAA/dot
+        dst: .
+        src: AAA/dot/conf file
+        dst: .conf file
+        src: BBB/dot/sub dir/conf file
+        dst: .sub dir/conf file
+        src: C/dot/
+        dst: .
+        "
+    while read src; do
+        read dest
+        echo "src: $src"
+        echo "dst: $dest"
+    done \
+        < <(echo "$input" | trim_spec | add_dot_dest) \
+        | diff -u <(echo "$expected" | trim_spec) -
+}
 
-    set_dest_target           'a/bin/file'
-    assert_equal    "$dest"     'bin/file'
-    assert_equal    "$target"   '../.home/a/bin/file'
-
-    set_dest_target         'a b/bin/dir/sub dir/sub file'
-    assert_equal    "$dest"     'bin/dir/sub dir/sub file'
-    assert_equal    "$target"   '../../../.home/a b/bin/dir/sub dir/sub file'
-
-    set_dest_target         'a/dot/file'
-    assert_equal    "$dest"     '.file'
-    assert_equal    "$target"   '.home/a/dot/file'
-
-    set_dest_target         'a/dot/b/c/d/file'
-    assert_equal    "$dest"     '.b/c/d/file'
-    assert_equal    "$target"   '../../../.home/a/dot/b/c/d/file'
+@test symlink_rel_target {
+    assert_function  symlink_rel_target  <<.
+        A/bin         ∙ bin         ⇒  .home/A/bin
+        A/bin/a prog  ∙ bin/a prog  ⇒  ../.home/A/bin/a prog
+        B/lib/x/y/z   ∙ lib/x/y/z   ⇒  ../../../.home/B/lib/x/y/z
+.
 }

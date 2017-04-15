@@ -12,19 +12,26 @@ warn() { echo -e >&2 ".home WARNING:" "$@"; }
 save_ifs() { oldifs="$IFS"; IFS="$1"; }
 restore_ifs() { IFS="$oldifs"; }
 
-set_dest_target() {
-    local src="$1"      # relative to ~/.home/
-    # non-local outputs:
-    # $dest             relative to ~/
-    # $target           relative to $(dirname dest/)
-
-    dest="${src#*/}"
-    dest="${dest/#dot\//.}"
-    [ "$dest" = dot ] && dest=.     # dest is the 'dot' directory itself (no /)
-
-    local slashes="${dest//[^\/]/}"    # Leave only slashes...
-    target="${slashes//\//../}.home/$src"
+#  Input lines: path including module (e.g., `MODULE/bin/prog`)
+# Output lines: input, install path (e.g., `MODULE/bin/prog\nbin/prog`)
+#
+add_bin_dest() {
+    sed -n -e 'p; s,^[^/]*/,,p'
 }
+
+#  Input lines: "dot" path including module, e.g., `MODULE/dot/ssh/config`
+# Output lines: input, install path, e.g. `MODULE/dot/ssh/config\n.ssh/config`
+add_dot_dest() {
+    sed -e 'p; s,^[^/]*/dot/,.,; s,^[^/]*/dot$,.,; '
+}
+
+# Produce the relative target path for a symlink from dest to src
+symlink_rel_target() {
+    local src="$1" dest="$2"
+    local slashes="${dest//[^\/]/}"         # Leave only slashes...
+    echo "${slashes//\//../}.home/$src"
+}
+
 
 canonicalize_dots() {
     save_ifs '/'
@@ -66,17 +73,14 @@ link_target() {
 run_symlink_pass() {
     for module in *; do
         [[ "$module" =~ ^[A-Za-z0-9_-]+$ ]] || continue
-        save_ifs $'\n'
-        for src in $(find 2>/dev/null                           \
-            "$module/bin" "$module/dot"                         \
-            ! -regex '.*\.inb[0-9]'                             \
-            | sort)
-        do
-            set_dest_target "$src"
+
+        while read src; do
+            read dest
+            target="$(symlink_rel_target "$src" "$dest")"
             # check if dest is dangling link into .home
             if [ -L ../"$dest" ]; then
                 # Remove dangling links into ~/.home/
-                link_target="$(link_target $HOME/$dest)"
+                link_target="$(link_target "$HOME/$dest")"
                 [[ "$link_target" =~ ^$HOME/.home/ ]] \
                     && [ ! -e "$link_target" ] \
                     && rm -f ../"$dest"
@@ -90,8 +94,11 @@ run_symlink_pass() {
             else
                 : # Ignore anything that's not a dir or file.
             fi
-        done
-        restore_ifs
+        done < <( find "$module/bin" ! -regex '.*\.inb[0-9]' 2>/dev/null \
+                      | sort | add_bin_dest; \
+                  find "$module/dot" 2>/dev/null ! -regex '.*\.inb[0-9]' \
+                      | sort | add_dot_dest; \
+                  )
     done
 }
 
