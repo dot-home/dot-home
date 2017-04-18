@@ -2,6 +2,7 @@
 set -e
 
 warn() { echo >&2 "$(basename $0):" "$@"; }
+die()  { warn "$@"; exit 1; }
 
 check_submodules() {
     count=$(git submodule status --recursive | sed -n -e '/^[^ ]/p' | wc -l)
@@ -28,6 +29,11 @@ build_bash() {
     [ -s "$archive_dir/$bash_tarball" ] \
         || wget -O "$archive_dir/$bash_tarball" \
             "https://ftp.gnu.org/gnu/bash/$bash_tarball"
+
+    pkg-config --version >/dev/null \
+        || die "Cannot run pkg-config; do you have dev tools installed?"
+    pkg-config --print-errors libbsd \
+        || die "Cannot find libbsd; please install libbsd-dev package."
 
     [ -s "$src_dir/configure" ] \
         || tar -x -C "$prefix/src" -f "$archive_dir/$bash_tarball"
