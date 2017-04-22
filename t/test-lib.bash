@@ -112,7 +112,7 @@ assert_function() {
             < <(echo "$param_spec∙" | sed -e 's/ *∙ */∙/g' -e 's/ *$//')
         IFS="$oldifs"
 
-        local actual="$($fut "${params[@]}")"
+        local actual="$($fut "${params[@]}" < /dev/null)"
         [ "$expected" = "$actual" ] || {
             failures=$(($failures+1))
             [ $failures -eq 1 ] \
