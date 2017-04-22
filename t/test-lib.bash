@@ -22,6 +22,19 @@ test_lib_setup() {
     test_home="$test_scratch_dir/home"
 }
 
+# A specification may have leading spaces, trailing spaces, blank
+# lines and comments (either at the beginning of a line or preceeded
+# by at least one space). All these are removed. We match spaces only,
+# and not general "whitespace", for simplicity.
+#
+trim_spec() {
+    sed 's/^ *//;               # Remove leading spaces
+         s/^#.*//;              # Remove comments at beginning of line
+         s/ * #.*//;            # Remove space-lead comments in line
+         /^$/d;                 # Remove empty lines
+         '
+}
+
 create_test_home_with_test_suite_data() {
     mkdir -p "$test_scratch_dir"
     cp -R "$test_suite_path.home" "$test_home"
@@ -51,7 +64,7 @@ create_test_home() {
         else
             echo "Content of $path" > "$abs_path"
         fi
-    done < <(sed -e 's/ *#.*//' -e '/^ *$/d')
+    done < <(trim_spec)
 }
 
 run_setup_on_test_home() {
@@ -66,7 +79,7 @@ diff_test_home_with() {
             -o          -print \
         | sed -e 's,^\./,,' | sort >"$home_actual")
 
-    sed -e 's/ *#.*//' -e 's/^ *//' -e '/^$/d' >> "$home_expected"
+    trim_spec >> "$home_expected"
     sort -o "$home_expected" "$home_expected"
 
     test_home_diffed_ok=true

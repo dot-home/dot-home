@@ -35,3 +35,16 @@ test_run_function() { echo test_run_function; return 17; }
     assert_failure
     assert_output --partial 'invalid option'
 }
+
+@test trim_spec {
+    run trim_spec < <(echo '     ')
+    assert_output ''
+
+    run trim_spec <<.
+        # Comments with leading space get removed
+        # ↓ Empty lines get removed
+
+        Some#content  # Comments (with leading space) can follow content
+.
+    assert_output 'Some#content'
+}
