@@ -48,3 +48,43 @@ test_run_function() { echo test_run_function; return 17; }
 .
     assert_output 'Some#content'
 }
+
+@test assert_function {
+    f() { echo "1<$1> 2<$2> 3<$3> 4<$4>"; }
+    run assert_function  f  <<.
+        # Arguments are separated by Unicode bullet operator (U+2219).
+        # In vim, insert this with digraph <Ctrl-K S b>.
+                                    ⇒ 1<> 2<> 3<> 4<>           # no args
+        o n e                       ⇒ 1<o n e> 2<> 3<> 4<>
+        o n e ∙ t w o               ⇒ 1<o n e> 2<t w o> 3<> 4<>
+        o n e ∙ t w o ∙             ⇒ 1<o n e> 2<t w o> 3<> 4<>
+        o n e ∙ t w o ∙   ∙ 4       ⇒ 1<o n e> 2<t w o> 3<> 4<4>
+        o n e ∙ t w o ∙   ∙ 4 ∙ 5   ⇒ 1<o n e> 2<t w o> 3<> 4<4>
+.
+    assert_output ''
+    assert_success
+}
+
+@test "assert_function fails when command does not exist" {
+    run assert_function 2>&1 does_not_exist  <<.
+        ⇒ 1<> 2<> 3<> 4<>
+.
+    assert_failure
+    assert_output --partial 'does_not_exist: command not found'
+}
+
+@test "assert_function fails when does not match spec" {
+    f() { echo "1<$1> 2<$2> 3<$3> 4<$4>"; }
+    run assert_function 2>&1 f  <<.
+    ⇒ 1<> 2<> 3<> 4<>
+    ⇒ 1<x> 2<x> 3<x> 4<x>
+.
+    assert_failure
+    assert_output <<.
+-- assert_function 'f' failure(s) --
+spec   : ⇒ 1<x> 2<x> 3<x> 4<x>
+actual : 1<> 2<> 3<> 4<>
+--
+1 specifications failed
+.
+}

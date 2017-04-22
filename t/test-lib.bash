@@ -96,3 +96,34 @@ assert_test_home() {
     $test_home_diffed_ok
 }
 
+assert_function() {
+    [ -n "$1" ] || fail "assert_function: missing function name"
+    local fut="$1"; shift   # function under test
+    [ -z "$1" ] || fail "assert_function: too many parameters"
+
+    local failures=0
+
+    while read spec; do
+        [[ "$spec" =~ (.*)⇒\ *(.*) ]]
+        local expected="${BASH_REMATCH[2]}"
+        local param_spec="${BASH_REMATCH[1]}"
+        local oldifs="$IFS"; IFS='∙'
+        read -a params \
+            < <(echo "$param_spec∙" | sed -e 's/ *∙ */∙/g' -e 's/ *$//')
+        IFS="$oldifs"
+
+        local actual="$($fut "${params[@]}")"
+        [ "$expected" = "$actual" ] || {
+            failures=$(($failures+1))
+            [ $failures -eq 1 ] \
+                && echo >&2 "-- assert_function '$fut' failure(s) --"
+            echo >&2 "spec   : $spec"
+            echo >&2 "actual : $actual"
+        }
+    done < <(trim_spec)
+
+    [ $failures -eq 0 ] || {
+        echo >&2 '--'
+        fail "$failures specifications failed"
+    }
+}
