@@ -168,6 +168,20 @@ run_inb4build_pass() {
     done
 }
 
+# This whole pass can be removed in a few months when everybody who was
+# using previous versions has run this pass at least once.
+#
+run_clean_legacy_bin_pass() {
+    # This is safe because it removes only symlinks targeting
+    # `../.home/*`, these should never have been created by anything
+    # but this script, and even if they were created by something
+    # else, it was wrong to do so. :-)
+    #
+    find ~/bin -lname '../.home/*' -delete 2>/dev/null || true
+
+    [[ "$PATH" =~ /\.local/bin ]] || warn '.local/bin not found in $PATH'
+}
+
 ############################################################
 
 passes=()
@@ -176,7 +190,7 @@ while [ -n "$1" ]; do case "$1" in
     -p)                         passes+=("$2"); shift; shift;;
     *)                          die "Unknown argument: $1";;
 esac; done
-[ -z "$passes" ] && passes=(inb4check inb4build symlink)
+[ -z "$passes" ] && passes=(inb4check inb4build symlink clean_legacy_bin)
 
 cd "$HOME"/.home/ 2>/dev/null || die "Cannot change to $HOME/.home/."
 for p in "${passes[@]}"; do

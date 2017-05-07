@@ -13,7 +13,8 @@ teardown() {
         .home/BBB/dot/config.inb1           # source file
         .home/BBB/share/data.inb4           # data file not linked into $HOME
 .
-    run_setup_on_test_home
+    # Add .local/bin to path to avert warning from clean_legacy_bin pass
+    PATH=$HOME/.local/bin:$PATH run_setup_on_test_home
     diff_test_home_with <<.
         .local/bin/prog -> ../../.home/AAA/bin/prog         # direct link
         .home/,inb4/dot/config                              # built files
