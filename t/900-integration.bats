@@ -15,8 +15,8 @@ teardown() {
 .
     run_setup_on_test_home
     diff_test_home_with <<.
-        bin/prog -> ../.home/AAA/bin/prog   # direct link
-        .home/,inb4/dot/config              # built files
+        .local/bin/prog -> ../../.home/AAA/bin/prog         # direct link
+        .home/,inb4/dot/config                              # built files
         .home/,inb4/share/data
         .home/_inb4/dot/config              # installed file (directly linked)
         .home/_inb4/share/data              # installed data file

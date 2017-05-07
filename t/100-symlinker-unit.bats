@@ -86,7 +86,7 @@ assert_compares() {
     # ??? assert_equal $(c aa/..)                    .
 }
 
-@test "add_bin_dest" {
+@test "add_local_dest" {
     input="
         A/bin/prog
         B/lib/system/file
@@ -94,18 +94,18 @@ assert_compares() {
         "
     expected="
         src: A/bin/prog
-        dst: bin/prog
+        dst: .local/bin/prog
         src: B/lib/system/file
-        dst: lib/system/file
+        dst: .local/lib/system/file
         src: C/this has/some spaces/in it
-        dst: this has/some spaces/in it
+        dst: .local/this has/some spaces/in it
         "
     while read src; do
         read dest
         echo "src: $src"
         echo "dst: $dest"
     done \
-        < <(echo "$input" | trim_spec | add_bin_dest) \
+        < <(echo "$input" | trim_spec | add_local_dest) \
         | diff -u <(echo "$expected" | trim_spec) -
 }
 

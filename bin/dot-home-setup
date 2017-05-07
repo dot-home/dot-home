@@ -15,8 +15,8 @@ restore_ifs() { IFS="$oldifs"; }
 #  Input lines: path including module (e.g., `MODULE/bin/prog`)
 # Output lines: input, install path (e.g., `MODULE/bin/prog\nbin/prog`)
 #
-add_bin_dest() {
-    sed -n -e 'p; s,^[^/]*/,,p'
+add_local_dest() {
+    sed -n -e 'p; s,^[^/]*/,.local/,p'
 }
 
 #  Input lines: "dot" path including module, e.g., `MODULE/dot/ssh/config`
@@ -95,7 +95,7 @@ run_symlink_pass() {
                 : # Ignore anything that's not a dir or file.
             fi
         done < <( find "$module/bin" ! -regex '.*\.inb[0-9]' 2>/dev/null \
-                      | sort | add_bin_dest; \
+                      | sort | add_local_dest; \
                   find "$module/dot" 2>/dev/null ! -regex '.*\.inb[0-9]' \
                       | sort | add_dot_dest; \
                   )

@@ -36,8 +36,8 @@ teardown() {
 .
     run_setup_on_test_home -p symlink
     diff_test_home_with <<.
-        bin/a file -> ../.home/AAA/bin/a file
-        bin/a dir/a file -> ../../.home/BBB/bin/a dir/a file
+        .local/bin/a file -> ../../.home/AAA/bin/a file
+        .local/bin/a dir/a file -> ../../../.home/BBB/bin/a dir/a file
         .a file -> .home/AAA/dot/a file
         .a dir/a file -> ../.home/BBB/dot/a dir/a file
 .
@@ -127,14 +127,14 @@ teardown() {
         .home/AAA/dot/a file
         .home/AAA/dot/an absolute link
         .home/AAA/dot/a dir/a file
-        bin/a file -> ../.home/does not/exist at/all
+        .local/bin/a file -> ../../.home/does not/exist at/all
         .a file -> .home/does not/exist at/all
         .a dir/a file -> ../.home/does not/exist at/all
         .an absolute link -> $test_home/.home/does not/exist at/all
 .
     run_setup_on_test_home -p symlink
     diff_test_home_with <<.
-        bin/a file -> ../.home/AAA/bin/a file
+        .local/bin/a file -> ../../.home/AAA/bin/a file
         .a file -> .home/AAA/dot/a file
         .an absolute link -> .home/AAA/dot/an absolute link
         .a dir/a file -> ../.home/AAA/dot/a dir/a file
