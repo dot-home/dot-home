@@ -49,6 +49,63 @@ run_update_pass() {
 }
 
 ############################################################
+# dependency pass
+
+run_dependencies_pass() {
+    local modules_before=$(for_each_module \* echo)
+
+    cat_deps() { cat "$1/dh/dependencies" 2>/dev/null || true; }
+    < <( for_each_module \* cat_deps \
+         | decomment | sort -u \
+         | deps_remove_existing . \
+         | deps_conflict_check) \
+           deps_command_generator
+    for cmd in "${deps_commands[@]}"; do (eval "$cmd"); done
+
+    [[ $modules_before == $(for_each_module \* echo) ]] || run_dependencies_pass
+}
+
+decomment() {
+    sed 's/^ *//;               # Remove leading spaces
+         s/^#.*//;              # Remove comments at beginning of line
+         s/ * #.*//;            # Remove space-lead comments in line
+         /^$/d;                 # Remove empty lines
+         '
+}
+
+deps_remove_existing() {
+    local dh_dir="$1" module rest
+    while read module rest; do
+        [[ -d $dh_dir/$module ]] && continue
+        echo "$module $rest"
+    done
+}
+
+deps_conflict_check() {
+    local module rest prev
+    while read module rest; do
+        [[ $module == $prev ]] \
+            && { warn "Duplicate module dependency: $module"; continue; }
+        prev="$module"
+        echo "$module $rest"
+    done
+}
+
+declare -a deps_commands
+deps_command_generator() {
+    deps_commands=()
+    local module type args
+    while read module type args; do
+        local e="echo ===== $module"
+        case "$type" in
+            git)    deps_commands+=("$e; git clone '$args' '$module'");;
+            *)      deps_commands+=("$e; warn 'Unknown dependency type: $type'")
+                    ;;
+        esac
+    done
+}
+
+############################################################
 # inb4 passes
 
 declare -a inb4_sorted
@@ -245,7 +302,8 @@ while [ -n "$1" ]; do case "$1" in
     -u)                         do_update=true; shift;;
     *)                          die "Unknown argument: $1";;
 esac; done
-[ -z "$passes" ] && passes=(inb4check inb4build symlink clean_legacy_bin)
+[ -z "$passes" ] && passes=(
+    dependencies inb4check inb4build symlink clean_legacy_bin)
 $do_update       && passes=("update" "${passes[@]}");
 
 cd "$HOME"/.home/ 2>/dev/null || die "Cannot change to $HOME/.home/."
