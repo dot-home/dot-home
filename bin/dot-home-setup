@@ -71,35 +71,42 @@ link_target() {
 }
 
 run_symlink_pass() {
+    local module
     for module in *; do
         [[ "$module" =~ ^[A-Za-z0-9_-]+$ ]] || continue
-
-        while read src; do
-            read dest
-            target="$(symlink_rel_target "$src" "$dest")"
-            # check if dest is dangling link into .home
-            if [ -L ../"$dest" ]; then
-                # Remove dangling links into ~/.home/
-                link_target="$(link_target "$HOME/$dest")"
-                [[ "$link_target" =~ ^$HOME/.home/ ]] \
-                    && [ ! -e "$link_target" ] \
-                    && rm -f ../"$dest"
-            fi
-            if [ -d "$src" ]; then
-                mkdir -p "../$dest" 2>/dev/null || warn "Conflict: .home/$src/"
-            elif [ -f "$src" ]; then
-                [ "$(readlink "../$dest")" = "$target" ] && continue
-                ln -s "$target" "../$dest" 2>/dev/null \
-                    || warn "Conflict: .home/$src"
-            else
-                : # Ignore anything that's not a dir or file.
-            fi
-        done < <( find "$module/bin" ! -regex '.*\.inb[0-9]' 2>/dev/null \
-                      | sort | add_local_dest; \
-                  find "$module/dot" 2>/dev/null ! -regex '.*\.inb[0-9]' \
-                      | sort | add_dot_dest; \
-                  )
+        run_symlink_module "$module"
     done
+}
+
+run_symlink_module() {
+    [[ -n $1 && -z $2 ]] || idie "run_symlink_module: bad params"
+    local module="$1"
+
+    while read src; do
+        read dest
+        target="$(symlink_rel_target "$src" "$dest")"
+        # check if dest is dangling link into .home
+        if [ -L ../"$dest" ]; then
+            # Remove dangling links into ~/.home/
+            link_target="$(link_target "$HOME/$dest")"
+            [[ "$link_target" =~ ^$HOME/.home/ ]] \
+                && [ ! -e "$link_target" ] \
+                && rm -f ../"$dest"
+        fi
+        if [ -d "$src" ]; then
+            mkdir -p "../$dest" 2>/dev/null || warn "Conflict: .home/$src/"
+        elif [ -f "$src" ]; then
+            [ "$(readlink "../$dest")" = "$target" ] && continue
+            ln -s "$target" "../$dest" 2>/dev/null \
+                || warn "Conflict: .home/$src"
+        else
+            : # Ignore anything that's not a dir or file.
+        fi
+    done < <( find "$module/bin" ! -regex '.*\.inb[0-9]' 2>/dev/null \
+                  | sort | add_local_dest; \
+              find "$module/dot" 2>/dev/null ! -regex '.*\.inb[0-9]' \
+                  | sort | add_dot_dest; \
+              )
 }
 
 declare -a inb4_sorted
