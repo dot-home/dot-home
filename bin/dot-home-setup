@@ -7,10 +7,22 @@ set -o pipefail
 ############################################################
 
 die()  { echo -e >&2 ".home ERROR:" "$@"; exit 1; }
+idie() { echo -e >&2 ".home INTERNAL ERROR: " "$@"; exit 99; }
 warn() { echo -e >&2 ".home WARNING:" "$@"; }
 
 save_ifs() { oldifs="$IFS"; IFS="$1"; }
 restore_ifs() { IFS="$oldifs"; }
+
+for_each_module() {
+    [[ -n $2 ]] || idie 'for_each_module: bad params'
+    local modules="$1";     shift
+    local f="$1";           shift
+    local module
+    for module in $modules; do
+        [[ $module =~ ^[A-Za-z0-9_-]+$ ]] || continue
+        $f "$@" "$module" || return 1
+    done
+}
 
 #  Input lines: path including module (e.g., `MODULE/bin/prog`)
 # Output lines: input, install path (e.g., `MODULE/bin/prog\nbin/prog`)
@@ -71,11 +83,7 @@ link_target() {
 }
 
 run_symlink_pass() {
-    local module
-    for module in *; do
-        [[ "$module" =~ ^[A-Za-z0-9_-]+$ ]] || continue
-        run_symlink_module "$module"
-    done
+    for_each_module \* run_symlink_module
 }
 
 run_symlink_module() {
