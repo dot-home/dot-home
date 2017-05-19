@@ -13,6 +13,15 @@ assert_run_inb4check_pass_stderr() {
     popd >/dev/null
 }
 
+@test "inb4check: not in module ⇒ don't build" {
+    create_test_home <<.
+        .home/x.git/dot/one.inb4        # has dot
+        .home/,inb4/dot/two.inb4        # has comma
+.
+    assert_run_inb4check_pass_stderr
+    assert_equal "${#inb4_outputs[@]}"  0
+}
+
 @test "inb4check: ∄ installed ⇒ build it" {
     create_test_home <<.
         .home/A/dot/one.inb4        # source

@@ -156,13 +156,17 @@ inb4_check_file_conflicts() {
     done
 }
 
+find_inb4_in_module() {
+    find "$1" -name '*.inb[0-9]'
+}
+
 inb4check_has_run=false
 declare -a inb4_outputs
 run_inb4check_pass() {
     local oldifs="$IFS"; IFS=$'\n'
     inb4_outputs=($(
-        find . -name '*.inb[0-9]' \
-        | sed -e s,./[^/]*/,, -e 's,\.inb[0-9]$,,' \
+        for_each_module \* find_inb4_in_module \
+        | sed -es,[^/]*/,, -e 's,\.inb[0-9]$,,' \
         | sort -u \
         | inb4_check_file_conflicts
     ))
