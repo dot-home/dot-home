@@ -12,9 +12,16 @@ teardown() {
         .home/AAA/dot/config.inb4           # source file
         .home/BBB/dot/config.inb1           # source file
         .home/BBB/share/data.inb4           # data file not linked into $HOME
+        .home/BBB/dh/update                 # updated below
 .
+    sed -e 's/^        //'  >"$test_home/.home/BBB/dh/update" <<.
+        #!/usr/bin/env bash
+        echo 'dh/update: Up to date!'
+.
+    chmod +x "$test_home/.home/BBB/dh/update"
+
     # Add .local/bin to path to avert warning from clean_legacy_bin pass
-    PATH=$HOME/.local/bin:$PATH run_setup_on_test_home
+    PATH=$HOME/.local/bin:$PATH run_setup_on_test_home -u
     assert_success_and_diff_test_home_with <<.
         .local/bin/prog -> ../../.home/AAA/bin/prog         # direct link
         .home/,inb4/dot/config                              # built files
@@ -32,5 +39,9 @@ Content of .home/BBB/dot/config.inb1
 ##### AAA/dot/config.inb4
 Content of .home/AAA/dot/config.inb4
 .
-    assert_output ''
+    trim_spec <<. | assert_output
+        ===== AAA
+        ===== BBB
+        dh/update: Up to date!
+.
 }

@@ -26,6 +26,29 @@ for_each_module() {
 }
 
 ############################################################
+# update pass
+
+find_updater_for() {
+    local path_to_module="$1"
+    [[ -x $path_to_module/dh/update ]] && { echo dh/update; return 0; }
+    git --git-dir="$path_to_module/.git" \
+        rev-parse --no-revs --quiet 2>/dev/null --verify @{upstream} \
+        && { echo 'git pull'; return 0; }
+}
+
+run_update_module() {
+    local module="$1"
+    echo "===== $module"
+    (  cd "$module"
+       $(find_updater_for "$(/bin/pwd -P)") || true
+    )
+}
+
+run_update_pass() {
+    for_each_module \* run_update_module
+}
+
+############################################################
 # inb4 passes
 
 declare -a inb4_sorted
@@ -214,13 +237,16 @@ run_clean_legacy_bin_pass() {
 ############################################################
 # Main
 
+do_update=false
 passes=()
 while [ -n "$1" ]; do case "$1" in
     --define-functions-only)    return 0; exit 0;;
     -p)                         passes+=("$2"); shift; shift;;
+    -u)                         do_update=true; shift;;
     *)                          die "Unknown argument: $1";;
 esac; done
 [ -z "$passes" ] && passes=(inb4check inb4build symlink clean_legacy_bin)
+$do_update       && passes=("update" "${passes[@]}");
 
 cd "$HOME"/.home/ 2>/dev/null || die "Cannot change to $HOME/.home/."
 for p in "${passes[@]}"; do
