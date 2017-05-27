@@ -15,7 +15,7 @@ teardown() {
 .
     # Add .local/bin to path to avert warning from clean_legacy_bin pass
     PATH=$HOME/.local/bin:$PATH run_setup_on_test_home
-    diff_test_home_with <<.
+    assert_success_and_diff_test_home_with <<.
         .local/bin/prog -> ../../.home/AAA/bin/prog         # direct link
         .home/,inb4/dot/config                              # built files
         .home/,inb4/share/data

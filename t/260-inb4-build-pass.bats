@@ -18,7 +18,7 @@ assert_output_file() {
 @test "inb4build pass with no inputs" {
     create_test_home < <(echo .home/ignored)
     run_setup_on_test_home -p inb4check -p inb4build
-    diff_test_home_with </dev/null
+    assert_success_and_diff_test_home_with </dev/null
     assert_output ''
 }
 
@@ -37,7 +37,7 @@ assert_output_file() {
         .home/C/dot/3 subdir/config.inb4
 .
     run_setup_on_test_home -p inb4check -p inb4build
-    diff_test_home_with <<.
+    assert_success_and_diff_test_home_with <<.
         # _built_ files
         .home/,inb4/dot/2 subdir/config
         .home/,inb4/dot/3 subdir/config

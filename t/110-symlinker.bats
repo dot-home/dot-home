@@ -7,10 +7,10 @@ teardown() {
 @test "Non-existent ~/.home" {
     create_test_home </dev/null
     run_setup_on_test_home -p symlink
+    assert_failure
     diff_test_home_with <<.
         .
 .
-    assert_failure
     assert_output -p '.home ERROR: Cannot change to'
 }
 
@@ -20,7 +20,7 @@ teardown() {
         bin/whatever
 .
     run_setup_on_test_home -p symlink
-    diff_test_home_with <<.
+    assert_success_and_diff_test_home_with <<.
         .home/.ignored
         bin/whatever
 .
@@ -35,7 +35,7 @@ teardown() {
         .home/BBB/dot/a dir/a file
 .
     run_setup_on_test_home -p symlink
-    diff_test_home_with <<.
+    assert_success_and_diff_test_home_with <<.
         .local/bin/a file -> ../../.home/AAA/bin/a file
         .local/bin/a dir/a file -> ../../../.home/BBB/bin/a dir/a file
         .a file -> .home/AAA/dot/a file
@@ -50,7 +50,7 @@ teardown() {
         .config -> .home/AAA/dot/config
 .
     run_setup_on_test_home -p symlink
-    diff_test_home_with <<.
+    assert_success_and_diff_test_home_with <<.
         .config -> .home/AAA/dot/config
 .
     assert_output ''
@@ -63,7 +63,7 @@ teardown() {
         .config -> .home/SECOND/dot/config
 .
     run_setup_on_test_home -p symlink
-    diff_test_home_with <<.
+    assert_success_and_diff_test_home_with <<.
         # Would be linked to FIRST if link didn't already exist
         .config -> .home/SECOND/dot/config
 .
@@ -76,7 +76,7 @@ teardown() {
         .config -> .home/gone/dot/config
 .
     run_setup_on_test_home -p symlink
-    diff_test_home_with <<.
+    assert_success_and_diff_test_home_with <<.
         #  This is not removed because, though it points inside ~/.home/,
         #  there is no .home/*/bin/dangling inside that would trigger
         #  us to look at it.
@@ -92,7 +92,7 @@ teardown() {
         .home/CCC/dot/config/ha ha it's a dir!
 .
     run_setup_on_test_home -p symlink
-    diff_test_home_with <<.
+    assert_success_and_diff_test_home_with <<.
        .config -> .home/AAA/dot/config
 .
     assert_output <<.
@@ -111,7 +111,7 @@ teardown() {
         .linked -> .other-file
 .
     run_setup_on_test_home -p symlink
-    diff_test_home_with <<.
+    assert_success_and_diff_test_home_with <<.
         .config
         .linked -> .other-file
 .
@@ -133,7 +133,7 @@ teardown() {
         .an absolute link -> $test_home/.home/does not/exist at/all
 .
     run_setup_on_test_home -p symlink
-    diff_test_home_with <<.
+    assert_success_and_diff_test_home_with <<.
         .local/bin/a file -> ../../.home/AAA/bin/a file
         .a file -> .home/AAA/dot/a file
         .an absolute link -> .home/AAA/dot/an absolute link
@@ -150,7 +150,7 @@ teardown() {
         .home/CCC/dot/dir/config2.inb9
 .
     run_setup_on_test_home -p symlink
-    diff_test_home_with <<.
+    assert_success_and_diff_test_home_with <<.
         .dir/config1 -> ../.home/AAA/dot/dir/config1
 .
     assert_output ''

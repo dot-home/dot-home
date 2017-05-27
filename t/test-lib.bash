@@ -71,6 +71,11 @@ run_setup_on_test_home() {
     HOME="$test_home" run "$base_dir/bin/dot-home-setup" "$@"
 }
 
+assert_success_and_diff_test_home_with() {
+    assert_success
+    diff_test_home_with "$@"
+}
+
 diff_test_home_with() {
     local home_actual="$test_scratch_dir/home.actual"
     (cd $test_home && find . \
