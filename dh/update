@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+#
+#  This updater is used for "staging" branches such as `bleeding-edge`
+#  where we do not do development work but place commits proposed for
+#  `master` that are likely to be rewritten. The users of such a
+#  branch want to drop any current code (because it's obsolete) and
+#  just use whatever is on the tracking branch and so cannot `git
+#  pull` because that's designed to preserve (via a merge or rebase)
+#  the code on the current branch. After doing a fetch, this script
+#  drops the changes by resetting to the head of the tracking branch.
+#
+#  The reset will normally remove this file (since this file should
+#  not be on development or master branches); we restore it by copying
+#  the latest version of it from a special branch dedicated to it.
+#
+
+set -e
+cd "$(dirname "$0")/.."     # Just to be safe, though dh should have done this
+
+git fetch
+
+echo "Hard reset to upstream"
+git reset --hard @{upstream}
+
+echo "Restoring dh/update"
+mkdir -p dh
+git show origin/dh-update-reset:dh/update > dh/update
