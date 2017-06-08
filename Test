@@ -73,12 +73,12 @@ build_sed() {
 ############################################################
 # Main
 
-# We use both UTF-8 and sorting in our tests so both collation and
-# character set must be set. We use LC_ALL to override any user
-# settings. We'd prefer C collation (local `C.UTF-8`) but this isn't
-# always installed whereas `en_US.UTF-8` almost invariably is.
+# Ensure we use a consistent locale for all tests. (LC_ALL overrides
+# any other local environment variables.) This covers character collation
+# order in Gnu sort, character-set fussiness on the part of MacOS sed,
+# and so on.
 #
-export LC_ALL=en_US.UTF-8
+export LC_ALL=C
 
 # Environment variables passed on to everything in build/test framework.
 #
