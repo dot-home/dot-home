@@ -13,7 +13,7 @@ assert_run_inb4check_pass_stderr() {
     popd >/dev/null
 }
 
-@test "inb4check: not in module ⇒ don't build" {
+@test "inb4check: ignore fragments not in modules" {
     create_test_home <<.
         .home/x.git/dot/one.inb4        # has dot
         .home/,inb4/dot/two.inb4        # has comma
@@ -22,9 +22,9 @@ assert_run_inb4check_pass_stderr() {
     assert_equal "${#inb4_outputs[@]}"  0
 }
 
-@test "inb4check: ∄ installed ⇒ build it" {
+@test "inb4check: ∄ installed ⇒ add to build list" {
     create_test_home <<.
-        .home/A/dot/one.inb4        # source
+        .home/A/dot/one.inb4        # fragment
         .home/,inb4/dot/one         # built
       # .home/_inb4/dot/one         # missing installed
         .home/A/dot/two.inb4        # ensure we return array
@@ -36,9 +36,9 @@ assert_run_inb4check_pass_stderr() {
     assert_equal "${inb4_outputs[1]}"   dot/two
 }
 
-@test "inb4check: built = installed ⇒ build it" {
+@test "inb4check: built = installed ⇒ add to build list" {
     create_test_home <<.
-        .home/A/dot/one.inb4        # source
+        .home/A/dot/one.inb4        # fragment
         .home/,inb4/dot/one         # built
         .home/_inb4/dot/one         # installed
 .
@@ -54,7 +54,7 @@ assert_run_inb4check_pass_stderr() {
 
 @test "inb4check: built ≠ installed ⇒ complain" {
     create_test_home <<.
-        .home/A/dot/one.inb4        # source
+        .home/A/dot/one.inb4        # fragment
         .home/,inb4/dot/one         # built
         .home/_inb4/dot/one         # installed
 .
@@ -68,9 +68,9 @@ assert_run_inb4check_pass_stderr() {
     assert_equal "${#inb4_outputs[@]}"  0
 }
 
-@test "inb4check: ∄ built ⇒ complain" {
+@test "inb4check: ∄ built & ∃ installed ⇒ complain" {
     create_test_home <<.
-        .home/A/dot/one.inb4        # source
+        .home/A/dot/one.inb4        # fragment
       # .home/,inb4/dot/one         # missing built
         .home/_inb4/dot/one         # installed
 .

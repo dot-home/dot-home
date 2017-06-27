@@ -151,6 +151,10 @@ find_inb4_in_module() {
     find "$1" -name '*.inb[0-9]'
 }
 
+# The `inb4check` pass makes no changes, just checks for error and
+# conflicts and produces the list of output files we need to generate
+# under the `,inb4` pseudo-module.
+#
 inb4check_has_run=false
 declare -a inb4_outputs
 run_inb4check_pass() {
