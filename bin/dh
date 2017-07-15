@@ -275,6 +275,28 @@ run_symlink_module() {
 }
 
 ############################################################
+# Edit pass
+
+declare -a edit_files
+find_for_editing() {
+    while IFS= read -d $'\0' file ; do
+        edit_files+=("$file")
+    done < <(find "$1" \( -name "${edit_args[0]}" \
+                       -o -name "${edit_args[0]}.inb[0-9]" \) -print0)
+}
+
+declare -a edit_args
+run_edit_pass() {
+    edit_files=()
+    while [[ "${#edit_args[@]}" -ne 0 ]]; do
+        for_each_module \* find_for_editing
+        edit_args=("${edit_args[@]:1}")
+    done
+    [[ ${#edit_files[@]} = 0 ]] && die "No matching files."
+    $EDITOR "${edit_files[@]}"
+}
+
+############################################################
 # Other passes
 
 # Making this a pass allows the 'test' subcommand to be used for both
@@ -310,6 +332,7 @@ case "$1" in
                                 passes+=(dependencies inb4check inb4build
                                          symlink clean_legacy_bin)
                                 ;;
+    edit)                       shift; passes+=(edit); edit_args=("$@"); shift $#;;
     *)                          die "Unknown subcommand: '$1'"
 esac
 [[ $# -eq 0 ]] || die "Too many arguments: '$@'"
