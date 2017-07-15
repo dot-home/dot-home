@@ -33,6 +33,7 @@ build_test_repo() {
     (   cd "$module"
         git init
         git config --local user.email 'test@dot-home'
+        git config --local user.name 'test'
         echo stuff > foo
         git add foo
         git commit -m 'a commit' foo
