@@ -11,13 +11,13 @@ assert_output_file() {
 
 @test "inb4build requires inb4check" {
     echo .home/ignored | create_test_home
-    run_dh_on_test_home -p inb4build
+    run_dh_on_test_home --passes inb4build
     assert_output --partial 'Must run inb4check pass before inb4build pass'
 }
 
 @test "inb4build pass with no inputs" {
     create_test_home < <(echo .home/ignored)
-    run_dh_on_test_home -p inb4check -p inb4build
+    run_dh_on_test_home --passes inb4check inb4build
     assert_success_and_diff_test_home_with </dev/null
     assert_output ''
 }
@@ -36,7 +36,7 @@ assert_output_file() {
         # Same name but different subdir
         .home/C/dot/3 subdir/config.inb4
 .
-    run_dh_on_test_home -p inb4check -p inb4build
+    run_dh_on_test_home --passes inb4check inb4build
     assert_success_and_diff_test_home_with <<.
         # _built_ files
         .home/,inb4/dot/2 subdir/config

@@ -6,7 +6,7 @@ teardown() {
 
 @test "Non-existent ~/.home" {
     create_test_home </dev/null
-    run_dh_on_test_home -p symlink
+    run_dh_on_test_home --passes symlink
     assert_failure
     diff_test_home_with <<.
         .
@@ -19,7 +19,7 @@ teardown() {
         .home/.ignored
         bin/whatever
 .
-    run_dh_on_test_home -p symlink
+    run_dh_on_test_home --passes symlink
     assert_success_and_diff_test_home_with <<.
         .home/.ignored
         bin/whatever
@@ -34,7 +34,7 @@ teardown() {
         .home/AAA/dot/a file
         .home/BBB/dot/a dir/a file
 .
-    run_dh_on_test_home -p symlink
+    run_dh_on_test_home --passes symlink
     assert_success_and_diff_test_home_with <<.
         .local/bin/a file -> ../../.home/AAA/bin/a file
         .local/bin/a dir/a file -> ../../../.home/BBB/bin/a dir/a file
@@ -49,7 +49,7 @@ teardown() {
         .home/AAA/dot/config
         .config -> .home/AAA/dot/config
 .
-    run_dh_on_test_home -p symlink
+    run_dh_on_test_home --passes symlink
     assert_success_and_diff_test_home_with <<.
         .config -> .home/AAA/dot/config
 .
@@ -62,7 +62,7 @@ teardown() {
         .home/SECOND/dot/config
         .config -> .home/SECOND/dot/config
 .
-    run_dh_on_test_home -p symlink
+    run_dh_on_test_home --passes symlink
     assert_success_and_diff_test_home_with <<.
         # Would be linked to FIRST if link didn't already exist
         .config -> .home/SECOND/dot/config
@@ -75,7 +75,7 @@ teardown() {
         .home/AAA/just so .home exists  # because non-existent .home test above
         .config -> .home/gone/dot/config
 .
-    run_dh_on_test_home -p symlink
+    run_dh_on_test_home --passes symlink
     assert_success_and_diff_test_home_with <<.
         #  This is not removed because, though it points inside ~/.home/,
         #  there is no .home/*/bin/dangling inside that would trigger
@@ -91,7 +91,7 @@ teardown() {
         .home/BBB/dot/config
         .home/CCC/dot/config/ha ha it's a dir!
 .
-    run_dh_on_test_home -p symlink
+    run_dh_on_test_home --passes symlink
     assert_success_and_diff_test_home_with <<.
        .config -> .home/AAA/dot/config
 .
@@ -110,7 +110,7 @@ teardown() {
         .home/AAA/dot/linked
         .linked -> .other-file
 .
-    run_dh_on_test_home -p symlink
+    run_dh_on_test_home --passes symlink
     assert_success_and_diff_test_home_with <<.
         .config
         .linked -> .other-file
@@ -132,7 +132,7 @@ teardown() {
         .a dir/a file -> ../.home/does not/exist at/all
         .an absolute link -> $test_home/.home/does not/exist at/all
 .
-    run_dh_on_test_home -p symlink
+    run_dh_on_test_home --passes symlink
     assert_success_and_diff_test_home_with <<.
         .local/bin/a file -> ../../.home/AAA/bin/a file
         .a file -> .home/AAA/dot/a file
@@ -149,7 +149,7 @@ teardown() {
         .home/BBB/dot/dir/config2.inb0
         .home/CCC/dot/dir/config2.inb9
 .
-    run_dh_on_test_home -p symlink
+    run_dh_on_test_home --passes symlink
     assert_success_and_diff_test_home_with <<.
         .dir/config1 -> ../.home/AAA/dot/dir/config1
 .

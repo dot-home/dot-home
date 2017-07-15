@@ -277,6 +277,13 @@ run_symlink_module() {
 ############################################################
 # Other passes
 
+# Making this a pass allows the 'test' subcommand to be used for both
+# functional and unit tests.
+#
+run_chdir_pass() {
+    cd "$HOME"/.home/ 2>/dev/null || die "Cannot change to $HOME/.home/."
+}
+
 # This whole pass can be removed in a few months when everybody who was
 # using previous versions has run this pass at least once.
 #
@@ -294,17 +301,19 @@ run_clean_legacy_bin_pass() {
 ############################################################
 # Main
 
-passes=()
-while [ -n "$1" ]; do case "$1" in
-    --define-functions-only)    return 0; exit 0;;
-    -p)                         passes+=("$2"); shift; shift;;
-    setup)                      passes=(dependencies inb4check inb4build symlink clean_legacy_bin); shift
-                                [[ $1 = -u ]] && { passes=("update" "${passes[@]}"); shift; }
+passes=(chdir)
+case "$1" in
+    --define-functions-only)    shift; passes=();;
+    --passes)                   shift; passes+=("$@"); shift $#;;
+    setup)                      shift
+                                [[ $1 = -u ]] && { passes+=("update"); shift; }
+                                passes+=(dependencies inb4check inb4build
+                                         symlink clean_legacy_bin)
                                 ;;
-    *)                          die "Unknown argument: $1";;
-esac; done
+    *)                          die "Unknown subcommand: '$1'"
+esac
+[[ $# -eq 0 ]] || die "Too many arguments: '$@'"
 
-cd "$HOME"/.home/ 2>/dev/null || die "Cannot change to $HOME/.home/."
 for p in "${passes[@]}"; do
     run_${p}_pass
 done
