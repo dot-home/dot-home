@@ -3,7 +3,7 @@ load 'test-lib'
 setup() {
     test_lib_setup
     export HOME=/dev/null
-    source "$BATS_TEST_DIRNAME/../bin/dot-home-setup" --define-functions-only
+    source "$BATS_TEST_DIRNAME/../bin/dh" --define-functions-only
 }
 
 @test for_each_module {

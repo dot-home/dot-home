@@ -294,17 +294,15 @@ run_clean_legacy_bin_pass() {
 ############################################################
 # Main
 
-do_update=false
 passes=()
 while [ -n "$1" ]; do case "$1" in
     --define-functions-only)    return 0; exit 0;;
     -p)                         passes+=("$2"); shift; shift;;
-    -u)                         do_update=true; shift;;
+    setup)                      passes=(dependencies inb4check inb4build symlink clean_legacy_bin); shift
+                                [[ $1 = -u ]] && { passes=("update" "${passes[@]}"); shift; }
+                                ;;
     *)                          die "Unknown argument: $1";;
 esac; done
-[ -z "$passes" ] && passes=(
-    dependencies inb4check inb4build symlink clean_legacy_bin)
-$do_update       && passes=("update" "${passes[@]}");
 
 cd "$HOME"/.home/ 2>/dev/null || die "Cannot change to $HOME/.home/."
 for p in "${passes[@]}"; do

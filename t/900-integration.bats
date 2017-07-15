@@ -31,7 +31,7 @@ teardown() {
     cp -r "$base_dir/t/fixtures/dependency 2.git" "$test_scratch_dir"
 
     # Add .local/bin to path to avert warning from clean_legacy_bin pass
-    PATH=$HOME/.local/bin:$PATH run_setup_on_test_home -u
+    PATH=$HOME/.local/bin:$PATH run_dh_on_test_home setup -u
     rm -rf "$test_home"/.home/DEP-?/.git
 
     assert_success_and_diff_test_home_with <<.

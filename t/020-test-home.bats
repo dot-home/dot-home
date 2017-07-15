@@ -10,7 +10,7 @@ load 'test-lib'
         another file
         a symlink -> nothing at all     # test this comment :-)
 _
-    run true    # In real tests this is run_setup_on_test_home
+    run true    # In real tests this is run_dh_on_test_home
     assert_success_and_diff_test_home_with <<_
         # Order does not matter here
         another file

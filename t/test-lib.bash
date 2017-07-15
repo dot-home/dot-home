@@ -67,8 +67,8 @@ create_test_home() {
     done < <(trim_spec)
 }
 
-run_setup_on_test_home() {
-    HOME="$test_home" run "$base_dir/bin/dot-home-setup" "$@"
+run_dh_on_test_home() {
+    HOME="$test_home" run "$base_dir/bin/dh" "$@"
 }
 
 assert_success_and_diff_test_home_with() {

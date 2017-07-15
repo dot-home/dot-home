@@ -2,7 +2,7 @@ load 'test-lib'
 
 setup() {
     test_lib_setup
-    source bin/dot-home-setup --define-functions-only
+    source bin/dh --define-functions-only
 }
 
 assert_run_inb4check_pass_stderr() {
