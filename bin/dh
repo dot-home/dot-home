@@ -282,7 +282,8 @@ find_for_editing() {
     while IFS= read -d $'\0' file ; do
         edit_files+=("$file")
     done < <(find "$1" \( -name "${edit_args[0]}" \
-                       -o -name "${edit_args[0]}.inb[0-9]" \) -print0)
+                       -o -name "${edit_args[0]}.inb[0-9]" \) \
+                   -type f -print0)
 }
 
 declare -a edit_args

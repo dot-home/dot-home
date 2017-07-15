@@ -16,6 +16,7 @@ setup() {
         .home/,inb4/dot/config file
         .home/CCC/dot/other config file  # Exact matches only
 .
+    mkdir -p "$test_home/.home/DDD/config file"   # Don't match directories
     run_dh_on_test_home edit 'config file' bar
     assert_output <<.
 AAA/dot/config file.inb4
