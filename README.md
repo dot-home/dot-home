@@ -19,7 +19,7 @@ repos) are called "modules." The dot-home system itself is placed in
 the building and installation of material found in all the modules,
 including itself.
 
-Running `dh setup`, runs the symlinker
+Running `dot-home setup`, runs the symlinker
 which goes through all the files in `~/.home/*/{bin,dot}` and
 does the following.
 

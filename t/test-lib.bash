@@ -68,7 +68,7 @@ create_test_home() {
 }
 
 run_dh_on_test_home() {
-    HOME="$test_home" run "$base_dir/bin/dh" "$@"
+    HOME="$test_home" run "$base_dir/bin/dot-home" "$@"
 }
 
 assert_success_and_diff_test_home_with() {
