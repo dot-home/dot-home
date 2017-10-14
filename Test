@@ -73,11 +73,12 @@ build_sed() {
 ############################################################
 # Main
 
-# We use `sort` and various other localized commands in the tests;
-# make sure that we always have a consistent sorting order regardless
-# of the user's locale.
+# We use both UTF-8 and sorting in our tests so both collation and
+# character set must be set. We use LC_ALL to override any user
+# settings. We'd prefer C collation (local `C.UTF-8`) but this isn't
+# always installed whereas `en_US.UTF-8` almost invariably is.
 #
-export LC_COLLATE=C
+export LC_ALL=en_US.UTF-8
 
 # Environment variables passed on to everything in build/test framework.
 #
