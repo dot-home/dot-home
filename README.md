@@ -9,27 +9,27 @@ are woefully incomplete.
 ### Introduction
 
 `dot-home` is a framework for version control, synchronization and
-building of configuration and other files typically found in a home
-directory.
+building of configuration and other files typically found in a `$HOME`
+(often written `~`) directory.
 
 Configuration and other information is stored in subdirectories under
-`~/.home`; these subdirectories (which are typically checkouts of git
-repos) are called "modules." The dot-home system itself is placed in
-`~/.home/_dot-home`; it's the "master" repo that handles dealing with
-the building and installation of material found in all the modules,
-including itself.
+`~/.home`; these subdirectories (which are usually working copies of
+git repos) are called "modules." The dot-home system itself is placed
+in `~/.home/_dot-home`; it's the "master" module that handles dealing
+with the building, installation and management of material found in
+all the modules, including itself.
 
-The setup script, `_dot-home/dot-home-setup`, runs the symlinker
-which goes through all the files in `~/.home/*/{bin,dot}` and
-does the following.
+The setup script, `_dot-home/bin/dot-home-setup`, runs the symlinker
+which goes through all the files in `~/.home/*/{bin,dot}` and does the
+following.
 
-For directories under `~/.home/*/bin` it creates a directory at the
-same path under `~/bin`. For files it creates a symlink at the same
-path under `~/bin` whose target is a relative path back to the file
-under `~/.home`. However, files ending in `.inb[0-9]` are not linked.
-(These are template files used to build new files.)
+For directories under `~/.home/*/bin/` it creates a directory at the
+same path under `~/.local/bin/`. For files it creates a symlink at the
+same path under `~/.local/bin/` whose target is a relative path back
+to the file under `~/.home`. However, files ending in `.inb[0-9]` are
+not linked. (These are template files used to build new files.)
 
-For directories in files under `~/.home/*/dot` the actions are the
+For directories and files under `~/.home/*/dot/` the actions are the
 same except that the path above is translated to `~/.`; i.e., the file
 `~/.home/module/dot/foo/bar` will generate a symlink `~/.foo/bar`
 pointing to it.
