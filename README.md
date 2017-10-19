@@ -40,3 +40,22 @@ links created by the dot-home system will be removed before the new
 link is created, but any other links, whether previously created by
 this dot-home run or created from outside the dot-home system, will
 generate a conflict warning and will be left untouched.
+
+### Usage of `~/.local/`
+
+The idea of a `~/.local` directory with a structure parallel to
+`/usr/local` (and by implication, `/usr`) may have originated with the
+[XDG Base Directory Specification][xdg-base], which specifies that
+`$XDG_DATA_HOME` defaults to `$HOME/.local/share`. The general idea
+has since been adopted by other systems, including:
+
+* Python: the [per-user site packages directory][py-PEP-370] is
+  `~/.local`. (2008-01; v2.6+, v3.0+)
+* Ubuntu 16.04: the default profile given to new users,
+  `/etc/skel/.profile`, adds `$HOME/.local/bin` to the path. (2016-04)
+
+
+
+[xdg-base]: https://specifications.freedesktop.org/basedir-spec/basedir-spec-0.6.html
+[py-PEP-370]: https://www.python.org/dev/peps/pep-0370/
+[py-userbase]: https://docs.python.org/2/library/site.html#site.USER_BASE
