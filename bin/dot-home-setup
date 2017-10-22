@@ -267,7 +267,8 @@ run_symlink_module() {
         else
             : # Ignore anything that's not a dir or file.
         fi
-    done < <( find "$module/bin" ! -regex '.*\.inb[0-9]' 2>/dev/null \
+    done < <( find "$module/bin"  "$module/share" 2>/dev/null \
+                  ! -regex '.*\.inb[0-9]' \
                   | sort | add_local_dest; \
               find "$module/dot" 2>/dev/null ! -regex '.*\.inb[0-9]' \
                   | sort | add_dot_dest; \

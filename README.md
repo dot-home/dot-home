@@ -23,11 +23,12 @@ The setup script, `_dot-home/bin/dot-home-setup`, runs the symlinker
 which goes through all the files in `~/.home/*/{bin,dot}` and does the
 following.
 
-For directories under `~/.home/*/bin/` it creates a directory at the
-same path under `~/.local/bin/`. For files it creates a symlink at the
-same path under `~/.local/bin/` whose target is a relative path back
-to the file under `~/.home`. However, files ending in `.inb[0-9]` are
-not linked. (These are template files used to build new files.)
+For directories under `~/.home/*/bin/` and `~/.home/*/share` it creates
+a directory at the same path under `~/.local/bin/` or `~/.local/share`.
+For files it creates a symlink at the same path under the same directory
+whose target is a relative path back to the file under `~/.home`.
+However, files ending in `.inb[0-9]` are not linked. (These are template
+files used to build new files.)
 
 For directories and files under `~/.home/*/dot/` the actions are the
 same except that the path above is translated to `~/.`; i.e., the file
