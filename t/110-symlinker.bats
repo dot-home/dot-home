@@ -102,6 +102,20 @@ teardown() {
 .
 }
 
+@test "conflicts in aliased directories in a .home module" {
+    create_test_home <<.
+        .home/AAA/bin/b
+        .home/AAA/dot/local/bin/b
+.
+    run_setup_on_test_home -p symlink
+    assert_success_and_diff_test_home_with <<.
+       .local/bin/b -> ../../.home/AAA/bin/b
+.
+    assert_output <<.
+.home WARNING: Conflict: .home/AAA/dot/local/bin/b
+.
+}
+
 # Existing files never get overwritten.
 @test "conflicts with files and symlinks outside of .home" {
     create_test_home <<.
