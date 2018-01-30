@@ -33,7 +33,7 @@ find_updater_for() {
     [[ -x $path_to_module/dh/update ]] && { echo dh/update; return 0; }
     git --git-dir="$path_to_module/.git" \
         rev-parse --no-revs --quiet 2>/dev/null --verify @{upstream} \
-        && { echo 'git pull'; return 0; }
+        && { echo 'git pull -q'; return 0; }
 }
 
 run_update_module() {
