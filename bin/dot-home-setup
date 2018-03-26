@@ -151,6 +151,9 @@ inb4_cat() {
         echo; echo "$prefix $file"
         cat "$file"
     done
+
+    echo
+    echo "$prefix End of inb4 generated content."
 }
 
 inb4_check_file_conflicts() {

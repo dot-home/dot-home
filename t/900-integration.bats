@@ -70,6 +70,8 @@ teardown() {
 
         ##### AAA/dot/config.inb4
         Content of .home/AAA/dot/config.inb4
+
+        ##### End of inb4 generated content.
 .
 
     # `.home/*/share/*` is not (yet) linked into `.local/share/`
@@ -83,6 +85,8 @@ teardown() {
         * A comment starting with specific text in the first five lines of
         * any inb4 fragment tells inb4 to use a different comment character:
         * :inb4:
+
+        ***** End of inb4 generated content.
 .
 
     trim_spec <<. | assert_output
