@@ -308,6 +308,18 @@ run_clean_legacy_bin_pass() {
 }
 
 ############################################################
+# run setup scripts pass
+
+run_setup_pass() {
+    echo "===== Running dh/setup scripts"
+    for module in *; do
+        [[ -e $module/dh/setup ]] || continue
+        echo "----- $module"
+        (cd "$module" && dh/setup) || warn "Failure exit with $?"
+    done
+}
+
+############################################################
 # Main
 
 do_update=false
@@ -319,7 +331,7 @@ while [ -n "$1" ]; do case "$1" in
     *)                          die "Unknown argument: $1";;
 esac; done
 [ -z "$passes" ] && passes=(
-    dependencies inb4check inb4build symlink clean_legacy_bin)
+    dependencies inb4check inb4build symlink clean_legacy_bin setup)
 $do_update       && passes=("update" "${passes[@]}");
 
 cd "$HOME"/.home/ 2>/dev/null || die "Cannot change to $HOME/.home/."

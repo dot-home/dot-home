@@ -13,6 +13,7 @@ teardown() {
         .home/BBB/dot/config.inb1           # source file
         .home/BBB/share/data.inb4           # data file not linked into $HOME
         .home/BBB/share/data.inb9
+        .home/BBB/dh/setup                  # updated below
         .home/BBB/dh/update                 # updated below
         .home/AAA/dh/dependencies           # updated below
 .
@@ -21,12 +22,20 @@ teardown() {
         * any inb4 fragment tells inb4 to use a different comment character:
         * :inb4:
 .
+    chmod +x "$test_home/.home/BBB/dh/setup"
+    sed -e 's/^        //'  >"$test_home/.home/BBB/dh/setup" <<.
+        #!/usr/bin/env bash
+        echo "dh/setup run in \$(pwd -P | sed -e 's,.*/home/,,')"
+        [[ -r dot/config.inb1 ]] \
+            || { echo 1>&2 "ERROR: Can't read dot/config.inb1"; exit 1; }
+.
+    chmod +x "$test_home/.home/BBB/dh/update"
     sed -e 's/^        //'  >"$test_home/.home/BBB/dh/update" <<.
         #!/usr/bin/env bash
         echo 'dh/update: Up to date!'
 .
-    chmod +x "$test_home/.home/BBB/dh/update"
     sed -e 's/^        //'  >"$test_home/.home/AAA/dh/dependencies" <<.
+
 
         # Comments and blank lines as usual in dependency files
         DEP-1 git $base_dir/t/fixtures/dependency 1.git
@@ -92,5 +101,8 @@ teardown() {
         done.
         ===== BORK
         .home WARNING: Unknown dependency type: borken
+        ===== Running dh/setup scripts
+        ----- BBB
+        dh/setup run in .home/BBB
 .
 }
