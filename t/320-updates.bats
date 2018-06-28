@@ -55,5 +55,5 @@ build_test_repo() {
     )
     run find_updater_for "$module"
     #(cd "$module" && git status)
-    assert_output 'git pull -q'
+    assert_output 'fetch_status_rebase_updater'
 }
