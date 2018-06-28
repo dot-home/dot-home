@@ -101,6 +101,7 @@ teardown() {
         done.
         ===== BORK
         .home WARNING: Unknown dependency type: borken
+        ===== Building files
         ===== Running dh/setup scripts
         ----- BBB
         dh/setup run in .home/BBB
