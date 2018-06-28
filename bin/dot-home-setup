@@ -39,7 +39,7 @@ find_updater_for() {
 fetch_status_rebase_updater() {
     git fetch -q    || return 1
     git status -bs  || return 1
-    git rebase -q   || return 1
+    git rebase -q   || { git rebase --abort 2>/dev/null; return 1; }
 }
 
 run_update_module() {
