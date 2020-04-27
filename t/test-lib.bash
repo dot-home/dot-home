@@ -114,7 +114,7 @@ assert_function() {
         local param_spec="${BASH_REMATCH[1]}"
         local oldifs="$IFS"; IFS='∙'
         read -a params \
-            < <(echo "$param_spec∙" | sed -e 's/ *∙ */∙/g' -e 's/ *$//')
+            < <(echo "${param_spec}∙" | sed -e 's/ *∙ */∙/g' -e 's/ *$//')
         IFS="$oldifs"
 
         local actual="$($fut "${params[@]}" < /dev/null)"
