@@ -18,7 +18,7 @@ build_3tools() {
 
     mkdir -p "$archive_dir" "$prefix/src"
     build_bash
-    build_sed
+    build_text_cmds
 }
 
 build_bash() {
@@ -46,28 +46,37 @@ build_bash() {
     )
 }
 
-build_sed() {
+build_text_cmds() {
     local text_cmds_ver=text_cmds-87
     local text_cmds_tarball=$text_cmds_ver.tar.gz
-    local src_dir="$prefix/src/$text_cmds_ver/sed"
+    local src_dir_sed="$prefix/src/$text_cmds_ver/sed"
+    local src_dir_head="$prefix/src/$text_cmds_ver/head"
 
     [ -s "$archive_dir/$text_cmds_tarball" ] \
         || wget -O "$archive_dir/$text_cmds_tarball" \
             "https://opensource.apple.com/tarballs/text_cmds/$text_cmds_tarball"
 
-    [ -s "$src_dir/main.c" ] \
+    [ -s "$src_dir_sed/main.c" ] \
         || tar -x -C "$prefix/src" -f "$archive_dir/$text_cmds_tarball"
 
+    #   The following sed script must be idempotent, so ensure you're
+    #   matching only the old code, and not the new, when trigging changes.
     sed -e '
         /#include <stdio.h>/s,stdio,bsd/stdio,
         /if(setlinebuf(stdout) != 0)/ {
             s//setlinebuf(stdout);/
             n
             d
-        }' -i $src_dir/main.c
+        }' -i $src_dir_sed/main.c $src_dir_head/head.c
+
     [ -x "$prefix/bin/sed" ] || (
-           cd "$src_dir" \
+           cd "$src_dir_sed" \
         && gcc -D'__FBSDID(x)=' -o $prefix/bin/sed "$@" *.c -lbsd
+    )
+
+    [ -x "$prefix/bin/head" ] || (
+           cd "$src_dir_head" \
+        && gcc -D'__FBSDID(x)=' -o $prefix/bin/head "$@" *.c -lbsd
     )
 }
 

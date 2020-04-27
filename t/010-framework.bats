@@ -29,9 +29,14 @@ test_run_function() { echo test_run_function; return 17; }
     assert_equal "$EXPECTED_BASH_VERSINFO" "$BASH_VERSINFO"
 }
 
-@test "BSD sed" {
+@test "BSD texttools" {
     [ "$BASH_VERSINFO" -eq 4 ] && return
+
     run sed --version
+    assert_failure
+    assert_output --regexp '(invalid|illegal) option --'
+
+    run head --version
     assert_failure
     assert_output --regexp '(invalid|illegal) option --'
 }
