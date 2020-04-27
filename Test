@@ -59,6 +59,7 @@ build_sed() {
         || tar -x -C "$prefix/src" -f "$archive_dir/$text_cmds_tarball"
 
     sed -e '
+        /#include <stdio.h>/s,stdio,bsd/stdio,
         /if(setlinebuf(stdout) != 0)/ {
             s//setlinebuf(stdout);/
             n
