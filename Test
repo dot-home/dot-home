@@ -97,8 +97,10 @@ check_submodules
 export EXPECTED_BASH_VERSINFO=4
 if [ _"$1" = _-3 ]; then        # Test with Bash 3 and other old tools
     shift
-    build_3tools "$build_dir/local"
-    PATH=$build_dir/local/bin:$PATH
     EXPECTED_BASH_VERSINFO=3
+    [[ $(uname) == Darwin ]] || {
+        build_3tools "$build_dir/local"
+        PATH=$build_dir/local/bin:$PATH
+    }
 fi
 bats/bin/bats "${@:-t/}"
