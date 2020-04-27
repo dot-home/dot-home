@@ -33,7 +33,7 @@ test_run_function() { echo test_run_function; return 17; }
     [ "$BASH_VERSINFO" -eq 4 ] && return
     run sed --version
     assert_failure
-    assert_output --partial 'invalid option'
+    assert_output --regexp '(invalid|illegal) option --'
 }
 
 @test trim_spec {
