@@ -142,7 +142,11 @@ inb4_sort() {
 inb4_cat() {
     inb4_sort "$@"
 
-    inb4_find_comment_char < <(head -q -n 10 "${inb4_sorted[@]}")
+    #   We can't use `head -q` here because that will break with BSD
+    #   head(1). However, the extra `==> dir/filename <==` lines that
+    #   get printed should cause no harm, since it's very unlikely
+    #   that any *.inb4 filenames would have the `:inb4:` tag in them.
+    inb4_find_comment_char < <(head -n 10 "${inb4_sorted[@]}")
     local c="$inb4_comment_char"
     local prefix="$c$c$c$c$c"
 
