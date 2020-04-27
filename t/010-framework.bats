@@ -26,11 +26,12 @@ test_run_function() { echo test_run_function; return 17; }
 # presence/absence of the `-3` option on `Test`.
 
 @test "expected BASH_VERSINFO" {
-    assert_equal "$EXPECTED_BASH_VERSINFO" "$BASH_VERSINFO"
+    [ "$BASH_VERSINFO" $EXPECTED_BASH_VERSINFO ]
+    assert_success
 }
 
 @test "BSD texttools" {
-    [ "$BASH_VERSINFO" -eq 4 ] && return
+    [ "$BASH_VERSINFO" -ge 4 ] && return
 
     run sed --version
     assert_failure
