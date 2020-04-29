@@ -103,13 +103,21 @@ mkdir -p  "$build_t_dir"
 
 cd "$base_dir"
 check_submodules
-export EXPECTED_BASH_VERSINFO='-ge 4'
-if [ _"$1" = _-3 ]; then        # Test with Bash 3 and other old tools
-    shift
-    EXPECTED_BASH_VERSINFO='-eq 3'
-    [[ $(uname) == Darwin ]] || {
+
+if [[ $(uname) == Darwin ]]; then
+    #   The Bash shipped with MacOS will never be higher than version 3,
+    #   due to licensing issues.
+    export EXPECTED_BASH_VERSINFO='-eq 3'
+    #   BSD tools are the default.
+    [[ _"$1" = _-3 ]] && shift      # ignored; we're already effectively -3
+else    # not MacOS
+    export EXPECTED_BASH_VERSINFO='-ge 4'
+    [[ _"$1" = _-3 ]] && {          # Test with Bash 3 and other old tools
+        shift
+        EXPECTED_BASH_VERSINFO='-eq 3'
         build_3tools "$build_dir/local"
         PATH=$build_dir/local/bin:$PATH
     }
 fi
+
 bats/bin/bats "${@:-t/}"
