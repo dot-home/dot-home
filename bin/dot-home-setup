@@ -46,7 +46,7 @@ run_update_module() {
     local module="$1"
     echo "===== $module"
     (  cd "$module"
-       $(find_updater_for "$(/bin/pwd -P)") || true
+       $(find_updater_for "$(pwd -P)") || true
     )
 }
 
