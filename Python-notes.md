@@ -45,6 +45,19 @@ that code for dot-home's support of this stuff. (Perhaps it can be
 extended to offer direct support to "clients" like dot-home.)
 
 
+Per-module Local (to Host) Configuration
+----------------------------------------
+
+You can create a `$module/dh/local.conf` file (which you will want not
+to commit and add to your `.gitignore`) for configuration settings
+particular to this host. One example would be the path to the Python
+interpreter to be used for that module's venv. (E.g., that module has
+code requiring Python 3.7, but the system Python is 3.5, so you build
+your own personal copy of Python 3.7 for that system.)
+
+Config file format is [configparser][] (basically, `.INI`).
+
+
 References
 ----------
 
@@ -57,6 +70,7 @@ References
 
 
 <!-------------------------------------------------------------------->
+[configparser]: https://docs.python.org/3/library/configparser.html
 [site]: https://docs.python.org/3/library/site.html
-[win]: https://github.com/0cjs/sedoc/blob/master/lang/python/runtime/win.md
 [virtualenv]: https://github.com/0cjs/sedoc/blob/master/lang/python/runtime/virtualenv.md
+[win]: https://github.com/0cjs/sedoc/blob/master/lang/python/runtime/win.md
