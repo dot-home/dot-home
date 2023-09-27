@@ -42,7 +42,19 @@ link is created, but any other links, whether previously created by
 this dot-home run or created from outside the dot-home system, will
 generate a conflict warning and will be left untouched.
 
-### Usage of `~/.local/`
+
+Usage of `~/.local/`
+--------------------
+
+`dot-home` opines that you should have `$HOME/.local/bin/` directory in
+your path. This is an XDG standard (see below) and many, but not all, Linux
+distributions do this automatically. The only user configuration included
+in the `dot-home` repo itself is a `prepath()` function to cleanly
+manipulate `$PATH` and an early addition of `~/.local/bin` to the front of
+`$PATH`. These are in `dot/bashrc.inb1`, allowing the user to modify either
+of these before or after this is run.
+
+#### History of `~/.local/`
 
 The idea of a `~/.local` directory with a structure parallel to
 `/usr/local` (and by implication, `/usr`) may have originated with the

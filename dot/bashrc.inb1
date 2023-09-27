@@ -4,8 +4,13 @@
 #   things from modules' bin/ directory. We define this in order to allow
 #   easily and safely adding that to the path,  as not all systems do this
 #   by default.
-
-if ! type prepath >/dev/null 2>&1; then prepath() {
+#
+#   This overrides any previous definition to ensure we have the correct
+#   one when it's called below. However, the user may override this in
+#   later .bashrc fragements by unsetting or redefining the function and
+#   removing ~/.local/bin from $PATH, if they really feel the need.
+unalias prepath 2>/dev/null || true
+prepath() {
     local usage="\
 Usage: prepath [-f] [-n] [-q] DIR
   -f Force dir to front of path even if already in path
@@ -31,6 +36,7 @@ Usage: prepath [-f] [-n] [-q] DIR
         PATH="${PATH//:$dir:/:}"    # remove if in middle
     fi
     PATH="$dir:$PATH"
-}; fi
+}
 
-prepath "$HOME/.local/bin"
+mkdir   -p "$HOME/.local/bin"
+prepath -f "$HOME/.local/bin"
