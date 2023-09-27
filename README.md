@@ -15,11 +15,11 @@ building of configuration and other files typically found in a `$HOME`
 Configuration and other information is stored in subdirectories under
 `~/.home`; these subdirectories (which are usually working copies of
 git repos) are called "modules." The dot-home system itself is placed
-in `~/.home/_dot-home`; it's the "master" module that handles dealing
+in `~/.home/dot-home`; it's the "master" module that handles dealing
 with the building, installation and management of material found in
 all the modules, including itself.
 
-The setup script, `_dot-home/bin/dot-home-setup`, runs the symlinker
+The setup script, `dot-home/bin/dot-home-setup`, runs the symlinker
 which goes through all the files in `~/.home/*/{bin,dot}` and does the
 following.
 
