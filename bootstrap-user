@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+dh_bootstrap_users_default=https://raw.githubusercontent.com/dot-home/dot-home/main/dh/bootstrap-users
+DH_BOOTSTRAP_USERS=${DH_BOOTSTRAP_USERS:-$dh_bootstrap_users_default}
+dh_repo=https://github.com/dot-home/dot-home
+dh_local="$HOME/.home/dot-home"
+
+####################################################################
+
+USAGE="\
+Usage: $(basename "$0")
+
+This command bootstraps a dot-home configuration for the user specified in
+\$LOGNAME. (POSIX XBD 8.3 specifies that this defaults to the current user.[1])
+
+This reads the \$DH_BOOTSTRAP_USERS file (default [2]) which contains lines
+of three whitespace-separated fields: login-name, repo-url and repo-name. It
+will find the first line whose login-name matches \$LOGNAME and:
+  1. Clone the repo specified in repo-url to \$HOME/.home/<repo-name>
+  2. Clone the dot-home repo to \$HOME/.home/dot-home
+  3. Run \$HOME/.home/dot-home/bin/dot-home-setup -u
+
+This script is typically run using the following command:
+
+    curl -sfL https://raw.githubusercontent.com/dot-home/dot-home/main/dh/bootstrap-users | bash
+
+See the dot-home README.md file[3] for more information.
+
+[1]: https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap08.html
+[2]: $dh_bootstrap_users_default
+[3]: $dh_repo
+"
+
+####################################################################
+
+die()  { local ec=$1; shift; echo 1>&2 "$@"; exit $ec; }
+
+
+[[ "${#@}" -eq 0 ]] || { echo "$USAGE"; exit 2; }
+echo "dot-home bootstrap for user $LOGNAME"
+
+echo "Reading $DH_BOOTSTRAP_USERS"
+while read logname repo_url local_repo; do
+    [[ $logname == $LOGNAME ]] || continue
+    [[ -n $local_repo ]] || local_repo=${repo_url##*/}
+    break
+done < <(curl -sfL "$DH_BOOTSTRAP_USERS")
+
+[[ $logname == $LOGNAME ]] \
+    || die 1 "Cannot find user $LOGNAME in $DH_BOOTSTRAP_USERS"
+
+echo "Cloning $local_repo from $repo_url"
+git clone -q "$repo_url" "$HOME/.home/$local_repo"
+echo "Cloning dot-home from $dh_repo"
+git clone -q "$dh_repo" "$dh_local"
+echo "Running dot-home-setup"
+"$dh_local"/bin/dot-home-setup
+echo "Test in a new window, or 'source ~/.bashrc'."
