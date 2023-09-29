@@ -1,11 +1,13 @@
 dot-home: Version-controlled Construction of Unix User Configuration
 ====================================================================
 
-### Introduction
-
 `dot-home` is a framework for version control, synchronization and
 building of configuration and other files typically found in a `$HOME`
 (often written `~`) directory.
+
+
+Theory of Operation
+-------------------
 
 Configuration and other information is stored in subdirectories under
 `~/.home`; these subdirectories (which are usually working copies of
@@ -18,17 +20,17 @@ The setup script, `dot-home/bin/dot-home-setup`, runs the symlinker
 which goes through all the files in `~/.home/*/{bin,dot}` and does the
 following.
 
-For directories under `~/.home/*/bin/` and `~/.home/*/share` it creates
-a directory at the same path under `~/.local/bin/` or `~/.local/share`.
-For files it creates a symlink at the same path under the same directory
-whose target is a relative path back to the file under `~/.home`.
-However, files ending in `.inb[0-9]` are not linked. (These are template
-files used to build new files.)
+- For directories under `~/.home/*/bin/` and `~/.home/*/share` it creates a
+  directory at the same path under `~/.local/bin/` or `~/.local/share`. For
+  files it creates a symlink at the same path under the same directory
+  whose target is a relative path back to the file under `~/.home`.
+  However, files ending in `.inb[0-9]` are not linked. (These are template
+  files used to build new files.)
 
-For directories and files under `~/.home/*/dot/` the actions are the
-same except that the path above is translated to `~/.`; i.e., the file
-`~/.home/module/dot/foo/bar` will generate a symlink `~/.foo/bar`
-pointing to it.
+- For directories and files under `~/.home/*/dot/` the actions are the same
+  except that the path above is translated to `~/.`; i.e., the file
+  `~/.home/module/dot/foo/bar` will generate a symlink `~/.foo/bar`
+  pointing to it.
 
 The modules and files within them are processed in lexical order with
 the first directory or file encountered taking priority. Dangling
@@ -38,8 +40,10 @@ this dot-home run or created from outside the dot-home system, will
 generate a conflict warning and will be left untouched.
 
 
-Usage of `~/.local/`
---------------------
+Notes
+-----
+
+### Usage of `~/.local/`
 
 `dot-home` opines that you should have `$HOME/.local/bin/` directory in
 your path. This is an XDG standard (see below) and many, but not all, Linux
@@ -64,6 +68,7 @@ has since been adopted by other systems, including:
 
 
 
+<!-------------------------------------------------------------------->
 [xdg-base]: https://specifications.freedesktop.org/basedir-spec/basedir-spec-0.6.html
 [py-PEP-370]: https://www.python.org/dev/peps/pep-0370/
 [py-userbase]: https://docs.python.org/2/library/site.html#site.USER_BASE
