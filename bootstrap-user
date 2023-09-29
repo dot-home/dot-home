@@ -23,7 +23,7 @@ will find the first line whose login-name matches \$LOGNAME and:
 
 This script is typically run using the following command:
 
-    curl -sfL https://raw.githubusercontent.com/dot-home/dot-home/main/dh/bootstrap-users | bash
+    curl -sfL https://raw.githubusercontent.com/dot-home/dot-home/main/bootstrap-user | bash
 
 See the dot-home README.md file[3] for more information.
 
