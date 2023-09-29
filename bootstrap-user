@@ -36,24 +36,36 @@ See the dot-home README.md file[3] for more information.
 
 die()  { local ec=$1; shift; echo 1>&2 "$@"; exit $ec; }
 
+clone_or_update() {
+    local url="$1" dir="$2"
+    if [[ ! -d $dir ]]; then
+        git clone -q "$url" "$dir"
+    else
+        git -C "$dir" fetch -q
+        git -C "$dir" rebase -q
+    fi
+
+}
 
 [[ "${#@}" -eq 0 ]] || { echo "$USAGE"; exit 2; }
 echo "dot-home bootstrap for user $LOGNAME"
 
 echo "Reading $DH_BOOTSTRAP_USERS"
-while read logname repo_url local_repo; do
+while read logname user_repo_url user_local_repo; do
     [[ $logname == $LOGNAME ]] || continue
-    [[ -n $local_repo ]] || local_repo=${repo_url##*/}
+    [[ -n $user_local_repo ]] || user_local_repo=${user_repo_url##*/}
     break
 done < <(curl -sfL "$DH_BOOTSTRAP_USERS")
 
-[[ $logname == $LOGNAME ]] \
-    || die 1 "Cannot find user $LOGNAME in $DH_BOOTSTRAP_USERS"
+if [[ $logname != $LOGNAME ]]; then
+    echo "Warning: cannot find user $LOGNAME in $DH_BOOTSTRAP_USERS"
+else
+    echo "Cloning $user_local_repo from $user_repo_url"
+    clone_or_update "$user_repo_url" "$HOME/.home/$user_local_repo"
+fi
 
-echo "Cloning $local_repo from $repo_url"
-git clone -q "$repo_url" "$HOME/.home/$local_repo"
 echo "Cloning dot-home from $dh_repo"
-git clone -q "$dh_repo" "$dh_local"
+clone_or_update "$dh_repo" "$dh_local"
 echo "Running dot-home-setup"
 "$dh_local"/bin/dot-home-setup
 echo "Test in a new window, or 'source ~/.bashrc'."
