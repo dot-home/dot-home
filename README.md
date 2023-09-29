@@ -5,6 +5,9 @@ dot-home: Version-controlled Construction of Unix User Configuration
 building of configuration and other files typically found in a `$HOME`
 (often written `~`) directory.
 
+See [`TUTORIAL.md`] for a tutorial on the installation, use and workings
+of dot-home.
+
 
 Theory of Operation
 -------------------
