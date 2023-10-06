@@ -72,6 +72,7 @@ has since been adopted by other systems, including:
 
 
 <!-------------------------------------------------------------------->
-[xdg-base]: https://specifications.freedesktop.org/basedir-spec/basedir-spec-0.6.html
+[`TUTORIAL.md`]: ./TUTORIAL.md
 [py-PEP-370]: https://www.python.org/dev/peps/pep-0370/
 [py-userbase]: https://docs.python.org/2/library/site.html#site.USER_BASE
+[xdg-base]: https://specifications.freedesktop.org/basedir-spec/basedir-spec-0.6.html
