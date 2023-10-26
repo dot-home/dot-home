@@ -8,6 +8,11 @@ building of configuration and other files typically found in a `$HOME`
 See [`TUTORIAL.md`] for a tutorial on the installation, use and workings
 of dot-home.
 
+Once you understand the basics, this is the magic incantation for an
+instant setup:
+
+    curl -sfL https://raw.githubusercontent.com/dot-home/dot-home/main/bootstrap-user | bash
+
 
 Theory of Operation
 -------------------
