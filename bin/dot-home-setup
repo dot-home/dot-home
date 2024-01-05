@@ -134,7 +134,7 @@ inb4_sort() {
         inb4_sorted+=("$line");
     done < <(
         for path in "$@"; do echo "${path: -1} $path"; done \
-            | sort -n --stable \
+            | sort -n -s \
             | sed -e 's/^..//' \
         )
 }
