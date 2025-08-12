@@ -28,7 +28,7 @@ Usage: prepath [-f] [-n] [-q] DIR
     [[ -z $1 ]] && { echo 1>&2 "$usage"; return 1; }
 
     [[ -d $1 ]] || { $qecho 1>&2 "$1 is not a directory."; return $errcode; }
-    dir="$(command cd "$1"; pwd -P)"
+    dir="$(builtin cd "$1"; pwd -P)"
     if [[ :$PATH: =~ :$dir: ]]; then
         $tofront || { $qecho 1>&2 "$dir already in path."; return 0; }
         PATH="${PATH#$dir:}"        # remove if at start
