@@ -16,7 +16,7 @@ export DH_BOOTSTRAP_USERS="file://$PROJDIR/dh/bootstrap-users"
 $PROJDIR/bootstrap-user
 
 expected=',inb4  _inb4  cpd  dot-home'
-  actual="$(ls -C $HOME/.home)"
+  actual="$(LC_COLLATE=C ls -C $HOME/.home)"
 [[ $expected == $actual ]] || die 30 "Failure:
   Expected: $expected
     Actual: $actual
