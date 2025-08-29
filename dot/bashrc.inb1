@@ -1,5 +1,33 @@
 #   dot-home minimal early bash config
 
+#   dot-home uses relative path links for configuration files that it does
+#   not need to build from fragments, so it's helpful to supply this
+#   functionality to users of dot-home who may want to create links in
+#   a similar way.
+#
+#   XXX This is not tested!
+#
+__dh__relpath() {
+    local source="$1" target_dir="$2"
+    local common_part="$source"
+    local result=""
+
+    while [[ "${target_dir#"$common_part"}" == "$target_dir" ]]; do
+        common_part=$(dirname "$common_part")
+        result="../$result"
+    done
+
+    if [[ "$common_part" == "/" ]]; then
+        result="$result${source:1}"
+    else
+        result="$result${source#"$common_part/"}"
+    fi
+
+    echo "${result%/}"
+}
+
+relative_path=$(get_relative_path "$source" "$(dirname "$target")")
+
 #   $HOME/.local/bin is an opinionated path into which dot-home installs
 #   things from modules' bin/ directory. We define this in order to allow
 #   easily and safely adding that to the path,  as not all systems do this
