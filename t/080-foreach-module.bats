@@ -9,13 +9,15 @@ setup() {
 @test for_each_module {
     say() { echo "        $1 $2$4$3"; }
     run for_each_module \
-        ",inb4 _dot-home _inb4 local public public.git" \
+        ",inb4 ,local.git -x _inb4 00-fred Fred local mycompany.com public" \
         say 'module :' '<' '>'          # Test arg with a space
     assert_success
     assert_output <<.
-        module : <_dot-home>
         module : <_inb4>
+        module : <00-fred>
+        module : <Fred>
         module : <local>
+        module : <mycompany.com>
         module : <public>
 .
 }

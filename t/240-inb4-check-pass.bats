@@ -15,8 +15,9 @@ assert_run_inb4check_pass_stderr() {
 
 @test "inb4check: ignore fragments not in modules" {
     create_test_home <<.
-        .home/x.git/dot/one.inb4        # has dot
-        .home/,inb4/dot/two.inb4        # has comma
+        .home/.foo/dot/one.inb4         # "hidden"
+        .home/!bar/dot/two.inb4         # does not start with letter/number
+        .home/,inb4/dot/three.inb4      # does not start with letter/number
 .
     assert_run_inb4check_pass_stderr
     assert_equal "${#inb4_outputs[@]}"  0

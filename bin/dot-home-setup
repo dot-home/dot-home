@@ -20,7 +20,9 @@ for_each_module() {
     local f="$1";           shift
     local module
     for module in $modules; do
-        [[ $module =~ ^[A-Za-z0-9_-]+$ ]] || continue
+        #   Modules must start with a letter, number, or underscore.
+        #   All other files/dirs are local data rather than dot-home modules.
+        [[ $module =~ ^[A-Za-z0-9_] ]] || continue
         $f "$@" "$module" || return 1
     done
 }
